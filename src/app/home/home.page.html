@@ -1,0 +1,46 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      SmartSketcher
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large" >Blank</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div id="container">
+   
+  </div>
+  <div id="props">
+    <ion-button expand='block'>
+      <!-- <ion-icon name="{{iconname}}"></ion-icon> -->
+      <!-- <ion-icon name="md-arrow-dropdown"></ion-icon> -->
+      <ion-select [(ngModel)]="props" (ionChange)='selectProps($event)' interface="popover" text-wrap>
+        <ion-select-option *ngFor="let props of properties" [value]="props">{{props}}</ion-select-option>
+      </ion-select>
+    </ion-button>
+      <div class="room-tool" *ngIf='props=="Room"'>
+        <ion-item>
+          <ion-icon (click)='select($event, "rectangle")' name="square-outline"></ion-icon>
+        </ion-item>
+        <ion-item>
+          <ion-icon (click)='select($event, "polygon")' name="create"></ion-icon>
+        </ion-item>
+      </div>
+      <div class="dev-tool" *ngIf='props=="Device"'>
+        <ion-item *ngFor='let dev of devices'>
+         <img src="{{dev.img}}" alt="">
+        </ion-item>
+      </div>
+      <div class="deco-tool" *ngIf='props=="Decorations"'>
+        <ion-item *ngFor='let deco of decorations'>
+         <img src="{{deco.img}}" alt="">
+        </ion-item>
+      </div>
+  </div>
+</ion-content>
