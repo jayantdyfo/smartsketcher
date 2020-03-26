@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-home',
@@ -7,7 +8,9 @@ import { Component } from '@angular/core';
 })
 export class HomePage {
 
-  constructor() {}
+  constructor(
+    private user: UserService,
+  ) {}
   iconname='square-outline'
   propbox = false;
   properties=['Room', 'Device', 'Decorations'];
@@ -27,17 +30,29 @@ export class HomePage {
   decorations=[
     {img:'assets/img/bed_7.png'},
     {img:'assets/img/bed_single.png'},
-    {img:'assets/img/floor.png'},
-    {img:'assets/img/marble.jpg'},
-    {img:'assets/img/bed_7.png'},
-    {img:'assets/img/bed_7.png'},
-    {img:'assets/img/bed_7.png'},
-    {img:'assets/img/bed_7.png'},
-    {img:'assets/img/bed_7.png'},
-    {img:'assets/img/bed_7.png'},
-    {img:'assets/img/bed_7.png'},
+    {img:'assets/img/sofa-1seat.png'},
+    {img:'assets/img/sofa-2seat.png'},
+    {img:'assets/img/table.png'},
+    {img:'assets/img/television.png'},
+    {img:'assets/img/dining-set.png'},
+    {img:'assets/img/cooler.png'},
+    // {img:'assets/img/bed_7.png'},
+    // {img:'assets/img/bed_7.png'},
+    // {img:'assets/img/bed_7.png'},
   ];
   props=this.properties[0]
+
+
+  ngOnInit() {
+    this.user.arraydata = JSON.parse(this.user.rapidPageValue);
+    // this.showarray = this.user.rapidPageValue;
+  }
+
+
+
+
+
+
   selectProps(e){
     console.log(e)
   }

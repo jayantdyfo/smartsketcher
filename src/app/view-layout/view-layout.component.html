@@ -1,0 +1,144 @@
+<!-- <p>view-layout works!</p> -->
+<div id="layoutView" #lv>
+    <div class="page-room">
+      <div id="home-layout" class="popout display-block">
+      </div>
+  
+      <!-- Room Details -->
+      <div id="rooms-layout" class="popout display-none">
+  
+      </div>
+    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="defs" width="0" height="0">
+      <defs>
+        <!--
+                    1. Wall
+                    2. Floors
+                    3. Socket
+                    4. Tubelight
+                    5. Fan
+                    6. Wall Lamp
+                    7. Bulb
+                    8. Chandelier
+                 -->
+        <linearGradient id="wallGradientLeft" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="20%" stop-color="#EDBB59" stop-opacity=".7" />
+          <stop offset="80%" stop-color="#EDBB59" />
+        </linearGradient>
+        <linearGradient id="wallGradientRight" x1="100%" y1="0%" x2="0%" y2="0%" xlink:href="#wallGradientLeft"></linearGradient>
+        <linearGradient id="wallGradientTop" x1="0%" y1="0%" x2="0%" y2="100%" xlink:href="#wallGradientLeft"></linearGradient>
+        <linearGradient id="wallGradientBottom" x1="0%" y1="100%" x2="0%" y2="0%" xlink:href="#wallGradientLeft"></linearGradient>
+  
+        <pattern id="woodenFloor" patternUnits="userSpaceOnUse" width="40" height="40">
+          <image xlink:href="assets/img/floor.jpg" x="0" y="0" width="40" height="40" class="updateImagePath"/>
+        </pattern>
+        <pattern id="marbleFloor" patternUnits="userSpaceOnUse" height="10" width="10" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/marble.jpg" class="updateImagePath"></image>
+        </pattern>
+  
+        <pattern id="socket" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0.2" y="0.1" height="0.8" width="0.6" xlink:href="assets/img/socket.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="socketOn" xlink:href="#socket">
+          <image x="0.2" y="0.1" height="0.8" width="0.6" xlink:href="assets/img/socket-on.png" class="updateImagePath"></image>
+        </pattern>
+  
+        <pattern id="tubelight" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1" preserveAspectRatio="none">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/tubelight.png" preserveAspectRatio="none" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="tubelightOn" xlink:href="#tubelight">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/tubelight-on.png" preserveAspectRatio="none" class="updateImagePath"></image>
+        </pattern>
+  
+        <pattern id="fan" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/rotor.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="fanOn" xlink:href="#fan">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/rotor-on.png" class="updateImagePath"></image>
+        </pattern>
+  
+        <pattern id="wallLamp" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/wall-lamp.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="wallLampOn" xlink:href="#wallLamp">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/wall-lamp-on.png" class="updateImagePath"></image>
+        </pattern>
+  
+        <pattern id="bulb" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/bulb.png" class="updateImagePath"></image>
+        </pattern>
+        <!-- <pattern id="bulbOn" xlink:href="#bulb">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/bulb-on-1.png" class="updateImagePath"></image>
+        </pattern> -->
+  
+        <pattern id="chandelier" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/chandelier.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="chandelierOn" xlink:href="#chandelier">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/chandelier-on.png" class="updateImagePath"></image>
+        </pattern>
+  
+        <pattern id="bed" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/bed_7.png"></image>
+        </pattern>
+  
+        <pattern id="airconditioner" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/airconditioner.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="airconditionerOn" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/airconditioner-on.png" class="updateImagePath"></image>
+        </pattern>
+  
+        <pattern id="geyser" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/geyser.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="geyserOn" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/geyser-on.png" class="updateImagePath"></image>
+        </pattern>
+  
+        <pattern id="refrigerator" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/refrigerator.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="refrigeratorOn" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/refrigerator-on.png" class="updateImagePath"></image>
+        </pattern>
+  
+        <pattern id="washingMachine" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/washing_machine.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="washingMachineOn" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/washing_machine-on.png" class="updateImagePath"></image>
+        </pattern>
+  
+        <pattern id="television" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/television.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="televisionOn" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/television-on.png" class="updateImagePath"></image>
+        </pattern>
+  
+        <pattern id="computer" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/computer.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="computerOn" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/computer-on.png" class="updateImagePath"></image>
+        </pattern>
+  
+        <pattern id="sofa-1seat" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/sofa-1seat.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="sofa-2seat" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/sofa-2seat.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="table" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/table.png" class="updateImagePath"></image>
+        </pattern>
+        <pattern id="dining-set" patternUnits="objectBoundingBox" height="1" width="1" viewBox="0 0 1 1">
+          <image x="0" y="0" height="1" width="1" xlink:href="assets/img/dining-set.png" class="updateImagePath"></image>
+        </pattern>
+  
+      </defs>
+    </svg>
+  
+  </div>
+  
