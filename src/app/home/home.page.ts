@@ -120,7 +120,8 @@ export class HomePage {
       $(function() {
         $("svg").mousedown(function(e) {
         
-          var offset = $(this).offset(); 
+          var offset = $(this).offset();
+          
         self.x = (e.pageX - offset.left);
         self.y = (e.pageY - offset.top);
         });
