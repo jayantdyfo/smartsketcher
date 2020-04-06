@@ -60,7 +60,7 @@ export class HomePage {
     {img:'assets/img/floor.png'},
     {img:'assets/img/marble.jpg'},
     {img:'assets/img/tiles1.png'},
-    {img:'assets/img/tiles2.png'},
+    {img:'assets/img/tiles2.jpg'},
     {img:'assets/img/tiles3.png'},
     {img:'assets/img/tiles4.png'},
     {img:'assets/img/tiles5.png'},
