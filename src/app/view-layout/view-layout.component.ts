@@ -25,10 +25,10 @@ export class ViewLayoutComponent implements OnInit, OnChanges {
    
   ngOnInit() {
     console.log("initialisation of viewLayout");
-    this.variableService.activeRoomId = null;
-    this.variableService.showHouse2dIcon = true;
-    this.variableService.exitApp = true;
-    this.serverUrl = this.variableService.serverHost + ":" + this.variableService.serverPort + "/";
+    //this.variableService.activeRoomId = null;
+    ////this.variableService.showHouse2dIcon = true;
+    //this.variableService.exitApp = true;
+    //this.serverUrl = this.variableService.serverHost + ":" + this.variableService.serverPort + "/";
     
     
   }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { ViewLayoutComponent } from '../view-layout/view-layout.component';
+import * as d3 from 'd3';
 
 @Component({
   selector: 'app-home',
@@ -15,6 +16,13 @@ export class HomePage {
   
   viewDetails = ViewLayoutComponent;
   iconname='square-outline'
+  x;
+  y;
+  x1:number;
+  x2:number;
+  y1:number;
+  y2:number;
+  svg;
   propbox = false;
   properties=['Room', 'Device', 'Decorations'];
   devices=[
@@ -83,6 +91,14 @@ export class HomePage {
   ngOnInit() {
     // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
     // this.showarray = this.user.rapidPageValue;
+    var width = 1050;
+    var height = 700;
+    this.svg = d3.select("#container")
+    .append("svg")
+   .attr("width", width)
+    .attr("height", height)
+    .style('border',"1px solid black").
+    style('margin','-7%');
   }
 
 
@@ -95,99 +111,58 @@ export class HomePage {
   }
   roomNo=0;
   select(ev, toolname){
+    var self=this;
     console.log(ev)
     let house = document.getElementById('container');
       house.style.cursor='crosshair';
     if(toolname=='rectangle'){
-      house.addEventListener('click', e => {
-        console.log(e);
-        // var el = document.createElement('div');
-        // el.style.border='2px solid';
-        // el.style.height='100px';
-        // el.style.width='100px';
-        // el.setAttribute('id','room'+this.roomNo);
-        // el.classList.add('room');
-        // house.appendChild(el);
-        let rooms: RoomData[] = [];
-        rooms.push(
-          {
-            type: 'balcony',
-            label: {
-              name: 'Balcony'
-            },
-            coordinates: {
-              type: 'rect',
-              origin: {
-                x: 3,
-                y: 5
-              },
-              w: 25,
-              h: 8
-            },
-            roomId: 10,
-            active: true,
-            floor: 'wooden',
-            devices: [{
-              type: 'chandelier',
-              x: 50,
-              y: 50,
-              rotate: 0,
-              deviceId: 1,
-              scale: 0.5
-            }    
-           ],
-           decorations:[
-           
-            
-            {
-              type: 'sofa_2seat',
-              x: 30,
-              y: 17,
-              rotate: 0,
-              scale: 0.7
-            } ,
-            {
-              type: 'sofa_1seat',
-              x: 48,
-              y: 18,
-              rotate: 0,
-              scale: 0.56
-            }
-         
-            
-            
-          ]
-           
+      self=this;
+      $(function() {
+        $("svg").mousedown(function(e) {
+        
+          var offset = $(this).offset();
+          
+        self.x = (e.pageX - offset.left);
+        self.y = (e.pageY - offset.top);
         });
-        let doors = [];
-        doors.push(
-          {
-            origin: {
-              x: 4,
-              y: 5
-            },
-            length: 12,
-            
-            orientation:0
-          });
-          let entrance = {
-            x: 7,
-            y: 5,
-            length: 13,
-            orientation:90
-          };
-      this.data={
-        rooms: rooms,
-        doors: doors,
-        entrance: entrance
-      }
-      this.user.arraydata = this.data;
-      this.user.onHomeSelect();
-
-      });
+        });
+        
+      this.svg.append("rect").
+      attr('x',self.x).
+      attr('y',self.y).
+      attr('width','100').
+      attr('height','100').
+      attr('stroke','black').
+      attr('stroke-width','3').
+      attr('fill','none')
+      
     }
     if(toolname=='polygon'){
-     
-    }
-  }
+    
+    $(function() {
+      $("svg").mousedown(function(e) {
+      
+        var offset = $(this).offset(); 
+      self.x1 = (e.pageX - offset.left);
+      self.y1 = (e.pageY - offset.top);
+      });
+      });
+      $(function() {
+        $("svg").mouseup(function(e) {
+        
+          var offset = $(this).offset();
+          self.x2 = (e.pageX - offset.left);
+          self.y2 = (e.pageY - offset.top);
+         });
+        });
+  // alert("x1"+self.x1+"y1"+self.y2+"x2"+self.x2+"y2"+self.y2);
+    this.svg.append("line")
+       .attr("x1", self.x1)
+       .attr("x2", self.x2)
+       .attr("y1", self.y1)
+       .attr("y2", self.y2)
+       .attr("stroke", "black")
+       .attr('stroke-width','3')
+     }
+ }
 }

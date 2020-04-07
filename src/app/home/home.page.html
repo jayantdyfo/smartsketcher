@@ -13,10 +13,11 @@
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
+  <div id="container" style="padding:0% 0%">
     <span id="layout">
       <ng-container *ngComponentOutlet="viewDetails"></ng-container>
      </span>
+
   </div>
 
 
@@ -38,7 +39,12 @@
         </ion-item>
         <ion-item>
           <ion-icon (click)='select($event, "polygon")' name="create"></ion-icon>
+          Draw Polygon with Line
         </ion-item>
+        <!-- <ion-item>
+          <ion-icon (click)='line($event, "polygon")' name="remove"></ion-icon>
+          Draw Polygon with Line
+        </ion-item> -->
 
         <ion-button expand='block'>Door</ion-button>
         <ion-button expand='block'>Floor</ion-button>
