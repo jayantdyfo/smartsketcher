@@ -50,3 +50,10 @@ ion-select{
   height: 100px;
   width: 100px;
 }
+
+.static {
+  cursor: not-allowed;
+}
+.draggable {
+  cursor: move;
+}

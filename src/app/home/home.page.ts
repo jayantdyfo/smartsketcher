@@ -91,53 +91,82 @@ export class HomePage {
   ngOnInit() {
     // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
     // this.showarray = this.user.rapidPageValue;
-    var width = 1050;
-    var height = 700;
-    this.svg = d3.select("#container")
-    .append("svg")
-   .attr("width", width)
-    .attr("height", height)
-    .style('border',"1px solid black").
-    style('margin','-7%');
+    // var width = 1050;
+    // var height = '100%';
+  //   this.svg = d3.select("#container")
+  //   .append("svg")
+  //  .attr("width", width)
+  //   .attr("height", height)
+  //   .style('border',"1px solid black").
+  //   style('margin','-7%')
+  //   // .attr('onclick','makeDraggable(evt)')
+  //   ;
   }
-
-
-
-
-
-
+  ionViewWillEnter() {
+    // if(!(document.querySelector('rect') == null)){
+    //   console.log( d3.select('rect'))
+    //  }
+  }
   selectProps(e){
     console.log(e)
   }
+
+
   roomNo=0;
-  select(ev, toolname){
+  selectedElement;
+  offset
+  toolname='none';
+  select(ev, tool){
+    window['d3'] = d3;
     var self=this;
+    self.toolname=tool;
     console.log(ev)
-    let house = document.getElementById('container');
-      house.style.cursor='crosshair';
-    if(toolname=='rectangle'){
-      self=this;
+      let house = document.getElementById('house');
+      let selector = d3.select("#house");
+        house.style.cursor='crosshair';
+        if(self.toolname=='rectangle'){
+          self=this;
+            self.getPointerOnSVG();
+            selector.on('click', (e)=>{ 
+              self.createRoom()
+              house.style.cursor='default';
+              // self.toolname='none';
+            })
+           
+        
+
       $(function() {
-        $("svg").mousedown(function(e) {
         
-          var offset = $(this).offset();
-          
-        self.x = (e.pageX - offset.left);
-        self.y = (e.pageY - offset.top);
-        });
-        });
-        
-      this.svg.append("rect").
-      attr('x',self.x).
-      attr('y',self.y).
-      attr('width','100').
-      attr('height','100').
-      attr('stroke','black').
-      attr('stroke-width','3').
-      attr('fill','none')
-      
+          // self.makeDraggable(evt)
+          // if(evt.which==3){
+          //   evt.preventDefault();
+          //   $(evt.target).remove();
+          // }
+
+
+        // let el = document.querySelector('rect');
+        // if (document.addEventListener) {
+        //   el.addEventListener('contextmenu', function(e) {
+        //     // if(e.target. == 'rect')
+        //     console.log(e)
+        //     alert(JSON.stringify(e)+'ddddd'); //here you draw your own menu
+            
+        //     e.preventDefault();
+        //   }, false);
+        // } 
+
+
+
+      })
+
+     
     }
-    if(toolname=='polygon'){
+   
+   
+   
+   
+  //  ......POLYGON...............................
+    if(self.toolname=='polygon'){
     
     $(function() {
       $("svg").mousedown(function(e) {
@@ -165,4 +194,109 @@ export class HomePage {
        .attr('stroke-width','3')
      }
  }
+
+getPointerOnSVG(){
+  let self = this;
+  $("svg").click(function(e) {
+    console.log(e)
+      var offset = $(this).offset();
+      
+    self.x = (e.pageX - offset.left);
+    self.y = (e.pageY - offset.top);
+  });
+}
+
+createRoom(){
+  let that = this;
+ const selector = d3.select("#house");
+  selector.on('click', null)
+  selector.append("rect").
+  // attr('x', this.x).
+  // attr('y', this.y).
+  attr('width','50').
+  attr('height','50').
+  attr('stroke','black').
+  attr('stroke-width','3').
+  attr('fill','white').
+  attr('class','draggable')
+  .attr("x", d => this.x)
+      .attr("y", d => this.y)
+  .call(that.drag_this);
+
+document.querySelectorAll('rect').forEach((el)=>{
+  el.style.cursor='move';
+})
+
+// $(function() {
+    $('rect').mousedown(function(evt){
+      // d3.select('rect').on('mousedown', (ev)=>{
+    
+        console.log(evt)
+        that.makeDraggable(evt)
+       })
+      
+    // })
+
+}
+// $("svg").mousedown(function(evt) {
+
+ makeDraggable(evt) {
+   var self = this
+   console.log(evt)
+  // var svg = evt;
+  var rect = d3.select('svg');
+  var svg = evt.target;
+  svg.addEventListener('mousedown', startDrag);
+  svg.addEventListener('mousemove', drag);
+  svg.addEventListener('mouseup', endDrag);
+  svg.addEventListener('mouseleave', endDrag);
+  function startDrag(evt) {
+    console.log('m_down'+evt)
+    if (evt.target.classList.contains('draggable')) {
+      console.log('dragable')
+      self.selectedElement = evt.target;
+      self.offset = getMousePosition(evt);
+      self.offset.x -= parseFloat(self.selectedElement.getAttributeNS(null, "x"));
+      self.offset.y -= parseFloat(self.selectedElement.getAttributeNS(null, "y"));
+    }
+  }
+
+  function getMousePosition(evt) {
+    var CTM = svg.getScreenCTM();
+    return {
+      x: (evt.clientX - CTM.e) / CTM.a,
+      y: (evt.clientY - CTM.f) / CTM.d
+    };
+  }
+  
+
+
+
+  function drag(evt) {
+    console.log('M_move'+ evt)
+    if (self.selectedElement) {
+      evt.preventDefault();
+      var coord = getMousePosition(evt);
+      console.log(JSON.stringify(self.selectedElement)+ coord)
+      self.selectedElement.setAttributeNS(null, "x", coord.x - self.offset.x);
+      self.selectedElement.setAttributeNS(null, "y", coord.y - self.offset.y);
+    }
+  }
+  function endDrag(evt) {
+    console.log('M_upAndLeave'+ evt)
+    self.selectedElement = null;
+
+  }
+}
+
+drag_this = d3.drag()
+    .on('start',function (d) {
+      d3.select(this).raise().attr("stroke", "black");
+    })
+    .on('drag',function(d){
+      d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+    });
+
+
+
 }
