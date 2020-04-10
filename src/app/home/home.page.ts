@@ -18,6 +18,7 @@ export class HomePage {
   iconname='square-outline'
   x;
   y;
+  image;
   x1:number;
   x2:number;
   y1:number;
@@ -92,13 +93,14 @@ export class HomePage {
     // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
     // this.showarray = this.user.rapidPageValue;
     var width = 1050;
-    var height = 700;
-    this.svg = d3.select("#container")
+    var height = 650;
+    this.svg = d3.select("#layout")
     .append("svg")
    .attr("width", width)
     .attr("height", height)
     .style('border',"1px solid black").
     style('margin','-7%');
+  //this.svg=document.querySelector('svg');
   }
 
 
@@ -107,7 +109,7 @@ export class HomePage {
 
 
   selectProps(e){
-    console.log(e)
+    //console.log(e)
   }
   roomNo=0;
   select(ev, toolname){
@@ -130,8 +132,8 @@ export class HomePage {
       this.svg.append("rect").
       attr('x',self.x).
       attr('y',self.y).
-      attr('width','100').
-      attr('height','100').
+      attr('width','200').
+      attr('height','200').
       attr('stroke','black').
       attr('stroke-width','3').
       attr('fill','none')
@@ -165,4 +167,49 @@ export class HomePage {
        .attr('stroke-width','3')
      }
  }
+  allowDrop(ev) {
+  ev.preventDefault();
+}
+
+ drag(ev,path) {
+ //localStorage.setItem('data',ev.currentTarget);
+ let element=ev.currentTarget;
+ this.image=path;
+ element.classList.add("mystyle");
+console.log(element)
+ //alert(data)
+//  alert(ev.currentTarget)
+//  console.log(ev.currentTarget)
+
+}
+
+drop(ev) {
+ // ev.preventDefault();
+  console.log(ev.target)
+let self=this;
+  //var data = localStorage.getData("data");
+  var data=document.querySelectorAll('.mystyle');
+  let target=document.querySelector('svg');
+  $(function() {
+    $("svg").mousedown(function(e) {
+    
+      var offset = $(this).offset();
+    self.x = (e.pageX - offset.left);
+    self.y= (e.pageY - offset.top);
+     });
+    });
+ //alert(data)
+ this.svg.append('image')
+       .attr("href",this.image)
+      .attr("x", self.x)
+      .attr("y", self.y)
+       .attr("width", "6%")
+       .attr("height", "6%")
+      //  .attr('stroke-width','3')
+     }
+//  for(let i=0;i<data.length;i++){
+//   // this.svg.appendChild(data[i]);
+//   ev.currentTarget.appendChild(data[i]);
+//  }
+//}
 }

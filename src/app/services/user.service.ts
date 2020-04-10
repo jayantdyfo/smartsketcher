@@ -220,6 +220,9 @@ export class UserService implements  AfterContentChecked {
     // alert.present();
     alert(title + subTitle);
   }
+  pass(x,y){
+    alert(x + "   " + y )
+  }
 
   grouping(this) {
     let self = this;
