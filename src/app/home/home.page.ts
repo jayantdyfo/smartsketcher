@@ -2,22 +2,27 @@ import { Component } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { ViewLayoutComponent } from '../view-layout/view-layout.component';
 import * as d3 from 'd3';
+import { PopoverController } from '@ionic/angular';
+import { drag } from 'd3';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
+
+
 export class HomePage {
 
   constructor(
-    private user: UserService,
+    private user: UserService, private popoverController: PopoverController,
   ) {}
   
   viewDetails = ViewLayoutComponent;
   iconname='square-outline'
-  x;
+  x; //..x,y for rect......
   y;
+  image;
   x1:number;
   x2:number;
   y1:number;
@@ -92,23 +97,17 @@ export class HomePage {
     // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
     // this.showarray = this.user.rapidPageValue;
     // var width = 1050;
-    // var height = '100%';
-  //   this.svg = d3.select("#container")
+    // var height = 650;
+  //   this.svg = d3.select("#layout")
   //   .append("svg")
   //  .attr("width", width)
   //   .attr("height", height)
   //   .style('border',"1px solid black").
-  //   style('margin','-7%')
-  //   // .attr('onclick','makeDraggable(evt)')
-  //   ;
-  }
-  ionViewWillEnter() {
-    // if(!(document.querySelector('rect') == null)){
-    //   console.log( d3.select('rect'))
-    //  }
+  //   style('margin','-7%');
+  //this.svg=document.querySelector('svg');
   }
   selectProps(e){
-    console.log(e)
+    //console.log(e)
   }
 
 
@@ -121,16 +120,15 @@ export class HomePage {
     var self=this;
     self.toolname=tool;
     console.log(ev)
-      let house = document.getElementById('house');
-      let selector = d3.select("#house");
-        house.style.cursor='crosshair';
+      let house = d3.select("#house");
+      house.style('cursor','cell');
         if(self.toolname=='rectangle'){
           self=this;
             self.getPointerOnSVG();
-            selector.on('click', (e)=>{ 
+            house.on('click', (e)=>{ 
               self.createRoom()
-              house.style.cursor='default';
-              // self.toolname='none';
+              house.style('cursor','default');
+              self.toolname='none';
             })
            
         
@@ -153,13 +151,8 @@ export class HomePage {
             
         //     e.preventDefault();
         //   }, false);
-        // } 
-
-
-
-      })
-
-     
+        // }
+      })    
     }
    
    
@@ -197,7 +190,7 @@ export class HomePage {
 
 getPointerOnSVG(){
   let self = this;
-  $("svg").click(function(e) {
+  $("svg").mousedown(function(e) {
     console.log(e)
       var offset = $(this).offset();
       
@@ -205,98 +198,229 @@ getPointerOnSVG(){
     self.y = (e.pageY - offset.top);
   });
 }
+// point
+// getPointerOnMove(){
+//   let self = this;
+//   $("svg").mousemove(function(e) {
+//     console.log(e)
+//       var offset = $(this).offset();
+//       let points={
+//         x : (e.pageX - offset.left),
+//         y : (e.pageY - offset.top)
+//       } 
+//       self.point=points;
+    
+//   });
+// }
 
+async presentPopover(ev: any) {
+  const popover = await this.popoverController.create({
+    component: ContextComponent,
+    event: ev,
+    translucent: true
+  });
+  this.currentPopover = popover;
+  return await popover.present();
+}
+currentPopover;
+async dismissPopover() {
+  if (this.currentPopover) {
+   await this.currentPopover.dismiss().then(() => { this.currentPopover = null; });
+  }
+}
 createRoom(){
   let that = this;
  const selector = d3.select("#house");
   selector.on('click', null)
   selector.append("rect").
-  // attr('x', this.x).
-  // attr('y', this.y).
+  attr('x', that.x).
+  attr('y', that.y).
   attr('width','50').
   attr('height','50').
   attr('stroke','black').
   attr('stroke-width','3').
   attr('fill','white').
-  attr('class','draggable')
-  .attr("x", d => this.x)
-      .attr("y", d => this.y)
-  .call(that.drag_this);
+  attr('class','draggable').style('z-index','0')
 
-document.querySelectorAll('rect').forEach((el)=>{
-  el.style.cursor='move';
+//  ...to move element.....................
+ let allRect = d3.selectAll('rect');
+// allRect.style('cursor', 'move');
+// allRect.call(d3.drag().on("start", started))
+function started() {
+  var currentEL = d3.select(this).classed("dragging", true);
+  let curElOrigin ={x:parseFloat(currentEL.attr('x')), y:parseFloat(currentEL.attr('y'))}
+  let clickDiff = {x:(d3.event.x-curElOrigin.x), y:(d3.event.y-curElOrigin.y)}
+  let rightBar = d3.select('#resizeW');
+  let bottomBar = d3.select('#resizeH');
+  let DragBars ={
+                    right:{x:parseFloat(rightBar.attr('x')),
+                           y:parseFloat(rightBar.attr('y'))},
+                    bottom:{x:parseFloat(bottomBar.attr('x')),
+                            y:parseFloat(bottomBar.attr('y'))}
+                  }
+   let clickDiffBar = {
+     right:{x:(d3.event.x-DragBars.right.x), y:(d3.event.y-DragBars.right.y)},
+     bottom:{x:(d3.event.x-DragBars.bottom.x), y:(d3.event.y-DragBars.bottom.y)}
+   }
+  d3.event.on("drag", dragged).on("end", ended)
+  function dragged(d) {
+    currentEL.raise().attr("x", that.x = d3.event.x-clickDiff.x).attr("y", that.y = d3.event.y-clickDiff.y);
+    rightBar.raise().attr('x',d3.event.x-clickDiffBar.right.x).attr('y',d3.event.y-clickDiffBar.right.y)
+    bottomBar.raise().attr('x',d3.event.x-clickDiffBar.bottom.x).attr('y',d3.event.y-clickDiffBar.bottom.y)
+  }
+  function ended(d) {
+    currentEL.classed("dragging", false);
+  }
+};
+// ...end of move..............
+
+
+// ... left click...to resize...........
+let toggle = true;
+allRect.on('click', toResize)
+function toResize(){
+  toggle = !toggle
+  if(toggle){
+    allRect.style('cursor', 'move');
+    allRect.call(d3.drag().on("start", started))
+    // d3.event.preventDefault();
+    let curEl = d3.select(this)
+    // ...........
+
+    // .... To Resize HEIGHT................
+    d3.select('svg').append('rect')
+    .attr('x',curEl.attr('x'))
+    .attr('y',parseFloat(curEl.attr('y'))+parseFloat(curEl.attr('height')))
+    .attr('stroke','red')
+    .attr('stroke-width','3')
+    .attr('width',curEl.attr('width'))
+    .attr('height','3')
+    .attr('fill','none')
+    .attr('id','resizeH')
+    .style('z-index','2').style('cursor','ns-resize')
+    .call(d3.drag().on('start',resHeight))
+    function resHeight() {
+  
+      var dragBarH = d3.select(this).classed("dragging", true);
+      let pre_y=d3.event.y
+      let pre_H=parseFloat(curEl.attr('height'))
+      d3.event.on("drag", dragged).on("end", ended);
+    
+      function dragged(d) {
+        dragBarH.raise().attr("y",d3.event.y);
+        // console.log(pre_y+pre_H+'---'+d3.event.y)
+        d3.select('#resizeW').raise().attr('height',pre_H+(d3.event.y-pre_y))
+        curEl.raise().attr('height',pre_H+(d3.event.y-pre_y))
+      }
+    
+      function ended(d) {
+        // console.log()
+        dragBarH.classed("dragging", false);
+      }
+    } //.......end...
+
+    // ....to resize WIDTH..............
+    d3.select('svg').append('rect')
+    .attr('y',curEl.attr('y'))
+    .attr('x',parseFloat(curEl.attr('x'))+parseFloat(curEl.attr('width')))
+    .attr('stroke','red')
+    .attr('stroke-width','3')
+    .attr('height',curEl.attr('height'))
+    .attr('width','2')
+    .attr('fill','none')
+    .attr('id','resizeW')
+    .style('z-index','2').style('cursor','ew-resize')
+    .call(d3.drag().on('start',reswidth))
+    function reswidth() {
+      var dragBarW = d3.select(this).classed("dragging", true);
+      let pre_x=d3.event.x
+      let pre_W=parseFloat(curEl.attr('width'))
+      d3.event.on("drag", dragged).on("end", ended);
+      function dragged(d) {
+        dragBarW.raise().attr("x",d3.event.x);
+        curEl.raise().attr('width',pre_W+(d3.event.x-pre_x))
+        d3.select('#resizeH').attr('width',pre_W+(d3.event.x-pre_x))
+      }
+    
+      function ended(d) {
+        dragBarW.classed("dragging", false);
+      }
+    }
+  } else{
+    allRect.style('cursor','default').call(d3.drag().on("start", null))
+    d3.select('#resizeH').remove()
+    d3.select('#resizeW').remove()
+  }
+}
+
+// ....right click menu........
+allRect.on('contextmenu', function(d,i){
+  d3.event.preventDefault();
+  console.log(''+d+'--' + i);
+  that.presentPopover(d)
 })
 
-// $(function() {
-    $('rect').mousedown(function(evt){
-      // d3.select('rect').on('mousedown', (ev)=>{
-    
-        console.log(evt)
-        that.makeDraggable(evt)
-       })
+
+}
+
+
+ allowDrop(ev) {
+  ev.preventDefault();
+}
+
+drag(ev,path) {
+ //localStorage.setItem('data',ev.currentTarget);
+ let element=ev.currentTarget;
+ this.image=path;
+ element.classList.add("mystyle");
+console.log(element)
+ //alert(data)
+//  alert(ev.currentTarget)
+//  console.log(ev.currentTarget)
+
+}
+
+drop(ev) {
+ // ev.preventDefault();
+  console.log(ev.target)
+  let self=this;
+    //var data = localStorage.getData("data");
+    var data=document.querySelectorAll('.mystyle');
+    let target=document.querySelector('svg');
+    $(function() {
+      $("svg").mousedown(function(e) {
       
-    // })
+        var offset = $(this).offset();
+      self.x = (e.pageX - offset.left);
+      self.y= (e.pageY - offset.top);
+      });
+      });
 
-}
-// $("svg").mousedown(function(evt) {
-
- makeDraggable(evt) {
-   var self = this
-   console.log(evt)
-  // var svg = evt;
-  var rect = d3.select('svg');
-  var svg = evt.target;
-  svg.addEventListener('mousedown', startDrag);
-  svg.addEventListener('mousemove', drag);
-  svg.addEventListener('mouseup', endDrag);
-  svg.addEventListener('mouseleave', endDrag);
-  function startDrag(evt) {
-    console.log('m_down'+evt)
-    if (evt.target.classList.contains('draggable')) {
-      console.log('dragable')
-      self.selectedElement = evt.target;
-      self.offset = getMousePosition(evt);
-      self.offset.x -= parseFloat(self.selectedElement.getAttributeNS(null, "x"));
-      self.offset.y -= parseFloat(self.selectedElement.getAttributeNS(null, "y"));
-    }
-  }
-
-  function getMousePosition(evt) {
-    var CTM = svg.getScreenCTM();
-    return {
-      x: (evt.clientX - CTM.e) / CTM.a,
-      y: (evt.clientY - CTM.f) / CTM.d
-    };
-  }
-  
-
-
-
-  function drag(evt) {
-    console.log('M_move'+ evt)
-    if (self.selectedElement) {
-      evt.preventDefault();
-      var coord = getMousePosition(evt);
-      console.log(JSON.stringify(self.selectedElement)+ coord)
-      self.selectedElement.setAttributeNS(null, "x", coord.x - self.offset.x);
-      self.selectedElement.setAttributeNS(null, "y", coord.y - self.offset.y);
-    }
-  }
-  function endDrag(evt) {
-    console.log('M_upAndLeave'+ evt)
-    self.selectedElement = null;
-
-  }
-}
-
-drag_this = d3.drag()
-    .on('start',function (d) {
-      d3.select(this).raise().attr("stroke", "black");
-    })
-    .on('drag',function(d){
-      d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-    });
+  this.svg.append('image')
+        .attr("href",this.image)
+        .attr("x", self.x)
+        .attr("y", self.y)
+        .attr("width", "6%")
+        .attr("height", "6%")
+        //  .attr('stroke-width','3')
+      }
 
 
 
 }
+
+
+
+// .......... custom component for right click menu.............
+@Component({
+  selector: 'context',
+  template: `<ion-list>
+  <ion-item button>Resize</ion-item>
+  <ion-item button>Move</ion-item>
+  <ion-item button>Showcase</ion-item>
+</ion-list>`,
+})
+export class ContextComponent {
+  constructor(){}
+}
+

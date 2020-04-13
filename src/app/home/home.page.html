@@ -55,12 +55,12 @@
       </div>
       <div class="dev-tool" *ngIf='props=="Device"'>
         <ion-item *ngFor='let dev of devices'>
-         <img src="{{dev.img}}" alt="">
+         <img src="{{dev.img}}"  alt="" draggable="true" (dragstart)="drag($event,dev.img)">
         </ion-item>
       </div>
       <div class="deco-tool" *ngIf='props=="Decorations"'>
         <ion-item *ngFor='let deco of decorations'>
-         <img src="{{deco.img}}" alt="">
+         <img src="{{deco.img}}"  alt="" draggable="true" (dragstart)="drag($event,deco.img)">
         </ion-item>
       </div>
   </div>
