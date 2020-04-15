@@ -50,17 +50,17 @@
         <ion-button expand='block'>Door</ion-button>
         <ion-button expand='block'>Floor</ion-button>
         <ion-item *ngFor='let f of floor'>
-          <img src="{{f.img}}" alt="">
+          <img class="floor" (mouseover)="drag($event, f.img)" src="{{f.img}}" alt="">
         </ion-item>
       </div>
       <div class="dev-tool" *ngIf='props=="Device"'>
         <ion-item *ngFor='let dev of devices'>
-         <img src="{{dev.img}}"  alt="" draggable="true" (dragstart)="drag($event,dev.img)">
+         <img class="device" src="{{dev.img}}"  alt="" draggable="true" (dragstart)="drag($event,dev.img)">
         </ion-item>
       </div>
       <div class="deco-tool" *ngIf='props=="Decorations"'>
         <ion-item *ngFor='let deco of decorations'>
-         <img src="{{deco.img}}"  alt="" draggable="true" (dragstart)="drag($event,deco.img)">
+         <img class="deco" src="{{deco.img}}"  alt="" draggable="true" (dragstart)="drag($event,deco.img)">
         </ion-item>
       </div>
   </div>

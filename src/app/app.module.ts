@@ -12,7 +12,7 @@ import * as $ from 'jquery'
 import { ViewLayoutComponent } from './view-layout/view-layout.component';
 import { VariableService } from './services/variable.service';
 import { UserService } from './services/user.service';
-import { ContextComponent } from './home/home.page';
+import { ContextComponent, HomePage } from './home/home.page';
 
 @NgModule({
   declarations: [AppComponent, ViewLayoutComponent,ContextComponent],
@@ -27,7 +27,7 @@ import { ContextComponent } from './home/home.page';
     UserService,
     ViewLayoutComponent,
     VariableService,
-    // HomeComponent,
+    HomePage,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent],

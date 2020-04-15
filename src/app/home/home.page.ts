@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { ViewLayoutComponent } from '../view-layout/view-layout.component';
 import * as d3 from 'd3';
@@ -94,6 +94,7 @@ export class HomePage {
   // export default data;  
 
   ngOnInit() {
+    // this.drag()
     // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
     // this.showarray = this.user.rapidPageValue;
     // var width = 1050;
@@ -118,10 +119,10 @@ export class HomePage {
   select(ev, tool){
     window['d3'] = d3;
     var self=this;
+    d3.select('#tempImg').remove();
     self.toolname=tool;
-    console.log(ev)
       let house = d3.select("#house");
-      house.style('cursor','cell');
+      house.raise().style('cursor','cell');
         if(self.toolname=='rectangle'){
           self=this;
             self.getPointerOnSVG();
@@ -212,7 +213,7 @@ getPointerOnSVG(){
     
 //   });
 // }
-
+@Input()currentPopover;
 async presentPopover(ev: any) {
   const popover = await this.popoverController.create({
     component: ContextComponent,
@@ -222,11 +223,12 @@ async presentPopover(ev: any) {
   this.currentPopover = popover;
   return await popover.present();
 }
-currentPopover;
-async dismissPopover() {
-  if (this.currentPopover) {
-   await this.currentPopover.dismiss().then(() => { this.currentPopover = null; });
-  }
+ dismissPopover() {
+  alert(this.currentPopover)
+  // if (this.currentPopover) {
+    
+   this.currentPopover.dismiss().then(() => { this.currentPopover = null; });
+  // }
 }
 createRoom(){
   let that = this;
@@ -237,11 +239,11 @@ createRoom(){
   attr('y', that.y).
   attr('width','50').
   attr('height','50').
-  attr('stroke','black').
-  attr('stroke-width','3').
-  attr('fill','white').
-  attr('class','draggable').style('z-index','0')
-
+  attr('stroke','rgb(79, 39, 39)').
+  attr('stroke-width','4').
+  attr('fill','transparent').
+  attr('class','room').style('z-index','0')
+  
 //  ...to move element.....................
  let allRect = d3.selectAll('rect');
 // allRect.style('cursor', 'move');
@@ -274,13 +276,22 @@ function started() {
 };
 // ...end of move..............
 
-
+// ....right click menu........
+allRect.on('contextmenu', function(d,i){
+  d3.event.preventDefault();
+  console.log(''+d+'--' + i);
+  that.presentPopover(d)
+  // d3.select('#res_but').on('click',()=>{console.log('hiiii')})
+})
+// right click end................
 // ... left click...to resize...........
-let toggle = true;
+let toggle = false;
 allRect.on('click', toResize)
 function toResize(){
   toggle = !toggle
   if(toggle){
+    d3.select('#resizeH').remove()
+    d3.select('#resizeW').remove()
     allRect.style('cursor', 'move');
     allRect.call(d3.drag().on("start", started))
     // d3.event.preventDefault();
@@ -353,13 +364,6 @@ function toResize(){
   }
 }
 
-// ....right click menu........
-allRect.on('contextmenu', function(d,i){
-  d3.event.preventDefault();
-  console.log(''+d+'--' + i);
-  that.presentPopover(d)
-})
-
 
 }
 
@@ -368,16 +372,62 @@ allRect.on('contextmenu', function(d,i){
   ev.preventDefault();
 }
 
-drag(ev,path) {
- //localStorage.setItem('data',ev.currentTarget);
- let element=ev.currentTarget;
- this.image=path;
- element.classList.add("mystyle");
-console.log(element)
- //alert(data)
-//  alert(ev.currentTarget)
-//  console.log(ev.currentTarget)
+// .... To set floor...........................................
+drag(e, fl_Img) {
+  // d3.event.preventDefault()
+  let floor = d3.select(e.target).style('border','2px solid blue')
+    floor.on('mouseleave', ()=>{floor.raise().style('border','none')})
+  // function setFloor() {
+    // d3.select(this).attr('pointer-events', 'none');
+    floor.on("mousedown", pick)
+    function pick(d) {
+      d3.select('#tempImg').remove();
+      d3.select('svg').style('cursor','crosshair').append('image')
+                       .attr('href',fl_Img)
+                       .attr('height',60)
+                       .attr('width',60)
+                       .attr('x',d3.event.x)
+                       .attr('y',d3.event.y)
+                       .attr('id','tempImg')
+      d3.select('body').on('mousemove',selectEL)
+      function selectEL(){
+        d3.select('#tempImg').raise().attr('x',d3.event.x-30)
+                                      .raise().attr('y',d3.event.y-45)
+            d3.selectAll('.room').on('mouseover',highlight)
+          function highlight(){
+              let el=d3.select(this).raise().attr('stroke','blue')
+                  el.on('click',dropImg)
+                  el.on('mouseleave',sel_rem)
+          }
+          function sel_rem(){
+            d3.select(this).raise().attr('stroke','rgb(79, 39, 39)')
+          }
+        }
 
+        function dropImg (){
+          let x = d3.select(this).attr('x')
+          let y = d3.select(this).attr('y')
+          let h = d3.select(this).attr('height')
+          let w = d3.select(this).attr('width')
+          d3.select('svg').append('image')
+          .attr('href',fl_Img)
+          .attr('height',h)
+          .attr('width',w)
+          .attr('x',x)
+          .attr('y',y)
+        }
+    }
+  // }
+
+  let svgEL = d3.selectAll('rect')
+  // svgEL.on('mousemove',selectEL)
+  // function selectEL(){
+  //   let el=d3.select(this).raise().attr('stroke','blue')
+  //   el.on('mouseleave',sel_rem)
+  // }
+  // function sel_rem(){
+  //   d3.select(this).raise().attr('stroke','rgb(79, 39, 39)')
+  // }
 }
 
 drop(ev) {
@@ -415,12 +465,16 @@ drop(ev) {
 @Component({
   selector: 'context',
   template: `<ion-list>
-  <ion-item button>Resize</ion-item>
+  <ion-item button id='res_but' (click)='activateResize()'>Resize</ion-item>
   <ion-item button>Move</ion-item>
   <ion-item button>Showcase</ion-item>
 </ion-list>`,
 })
 export class ContextComponent {
-  constructor(){}
+  constructor(public a:HomePage){}
+  activateResize(){
+    alert('resize')
+    this.a.dismissPopover()
+  }
 }
 
