@@ -14,11 +14,15 @@
   </ion-header>
 
   <div id="container" style="padding:0% 0%">
-    <svg id="house" height = '100%' width = '95%' xmlns="http://www.w3.org/2000/svg" style="border: 1px solid;" ></svg>
+    <svg id="house" height = '100%' width = '95%' xmlns="http://www.w3.org/2000/svg" style="border: 1px solid;" >
+      <defs>
+
+      </defs>
+    </svg>
     <!-- <div id="layout"> -->
       <!-- <ng-container *ngComponentOutlet="viewDetails"></ng-container> -->
     <!-- </div> -->
-
+    
   </div>
 
 
@@ -50,7 +54,7 @@
         <ion-button expand='block'>Door</ion-button>
         <ion-button expand='block'>Floor</ion-button>
         <ion-item *ngFor='let f of floor'>
-          <img class="floor" (mouseover)="drag($event, f.img)" src="{{f.img}}" alt="">
+          <img class="floor" (mouseover)="drag($event, f)" src="{{f.img}}" alt="">
         </ion-item>
       </div>
       <div class="dev-tool" *ngIf='props=="Device"'>

@@ -70,24 +70,24 @@ export class HomePage {
     // {img:'assets/img/bed_7.png'},
   ];
   floor=[
-    {img:'assets/img/floor.png'},
-    {img:'assets/img/marble.jpg'},
-    {img:'assets/img/tiles1.png'},
-    {img:'assets/img/tiles2.jpg'},
-    {img:'assets/img/tiles3.png'},
-    {img:'assets/img/tiles4.png'},
-    {img:'assets/img/tiles5.png'},
-    {img:'assets/img/tiles6.png'},
-    {img:'assets/img/tiles7.png'},
-    {img:'assets/img/tiles8.png'},
-    {img:'assets/img/tiles9.png'},
-    {img:'assets/img/tiles10.png'},
-    {img:'assets/img/tiles11.png'},
-    {img:'assets/img/tiles12.png'},
-    {img:'assets/img/tiles13.png'},
-    {img:'assets/img/tiles14.png'},
-    {img:'assets/img/tiles15.png'},
-    {img:'assets/img/tiles16.png'},
+    {img:'assets/img/floor.png', id:1},
+    {img:'assets/img/marble.jpg', id:2},
+    {img:'assets/img/tiles1.png', id:3},
+    {img:'assets/img/tiles2.jpg', id:4},
+    {img:'assets/img/tiles3.png', id:5},
+    {img:'assets/img/tiles4.png', id:6},
+    {img:'assets/img/tiles5.png', id:7},
+    {img:'assets/img/tiles6.png', id:8},
+    {img:'assets/img/tiles7.png', id:9},
+    {img:'assets/img/tiles8.png', id:10},
+    {img:'assets/img/tiles9.png', id:11},
+    {img:'assets/img/tiles10.png', id:12},
+    {img:'assets/img/tiles11.png', id:13},
+    {img:'assets/img/tiles12.png', id:14},
+    {img:'assets/img/tiles13.png', id:15},
+    {img:'assets/img/tiles14.png', id:16},
+    {img:'assets/img/tiles15.png', id:17},
+    {img:'assets/img/tiles16.png', id:18},
   ];
   props=this.properties[0]
   data;
@@ -213,23 +213,20 @@ getPointerOnSVG(){
     
 //   });
 // }
-@Input()currentPopover;
+// .............right click menu...................
 async presentPopover(ev: any) {
   const popover = await this.popoverController.create({
     component: ContextComponent,
     event: ev,
     translucent: true
   });
-  this.currentPopover = popover;
   return await popover.present();
 }
- dismissPopover() {
-  alert(this.currentPopover)
-  // if (this.currentPopover) {
-    
-   this.currentPopover.dismiss().then(() => { this.currentPopover = null; });
-  // }
+async dismissPopover(ev) {    
+   this.popoverController.dismiss().then(() => { });
 }
+// ...........menu end......................
+
 createRoom(){
   let that = this;
  const selector = d3.select("#house");
@@ -276,17 +273,18 @@ function started() {
 };
 // ...end of move..............
 
-// ....right click menu........
+// ....right click ........
 allRect.on('contextmenu', function(d,i){
   d3.event.preventDefault();
   console.log(''+d+'--' + i);
   that.presentPopover(d)
-  // d3.select('#res_but').on('click',()=>{console.log('hiiii')})
 })
 // right click end................
-// ... left click...to resize...........
+
+// .....to resize...........
 let toggle = false;
-allRect.on('click', toResize)
+var res_Event = ()=>{return allRect.on('click', toResize)}
+res_Event();
 function toResize(){
   toggle = !toggle
   if(toggle){
@@ -373,7 +371,8 @@ function toResize(){
 }
 
 // .... To set floor...........................................
-drag(e, fl_Img) {
+drag(e, fl) {
+  // console.log(fl_Img.sl)
   // d3.event.preventDefault()
   let floor = d3.select(e.target).style('border','2px solid blue')
     floor.on('mouseleave', ()=>{floor.raise().style('border','none')})
@@ -383,7 +382,7 @@ drag(e, fl_Img) {
     function pick(d) {
       d3.select('#tempImg').remove();
       d3.select('svg').style('cursor','crosshair').append('image')
-                       .attr('href',fl_Img)
+                       .attr('href',fl.img)
                        .attr('height',60)
                        .attr('width',60)
                        .attr('x',d3.event.x)
@@ -404,17 +403,36 @@ drag(e, fl_Img) {
           }
         }
 
-        function dropImg (){
-          let x = d3.select(this).attr('x')
-          let y = d3.select(this).attr('y')
-          let h = d3.select(this).attr('height')
-          let w = d3.select(this).attr('width')
-          d3.select('svg').append('image')
-          .attr('href',fl_Img)
-          .attr('height',h)
-          .attr('width',w)
-          .attr('x',x)
-          .attr('y',y)
+        function dropImg (){ 
+          d3.select(this).raise().attr('stroke','rgb(79, 39, 39)')
+          let floorid = d3.select('#fl'+fl.id)
+          if(floorid.node()){
+            console.log('id exist'+floorid.node())
+            d3.select(this).raise().attr('fill','url(#fl'+fl.id+')')
+          } else{
+            d3.select('defs').append('pattern')
+            .attr('x',0)
+            .attr('y',0)
+            .attr('height',40)
+            .attr('width',40)
+            .attr('id','fl'+fl.id)
+            .attr('patternUnits',"userSpaceOnUse")
+            .append('image')
+            .attr('xlink:href',fl.img)
+            .attr('height',40)
+            .attr('width',40)
+            .attr('x',0)
+            .attr('y',0)
+            d3.select(this).raise().attr('fill','url(#fl'+fl.id+')')
+          }
+          // .............REMOVE EVENTS AFTER SETTING FLOOR.................
+          d3.select(this).on('click', null)
+          d3.select(this).on('mouseleave',null)
+          d3.select('#tempImg').remove();
+          d3.select('svg').style('cursor','default')
+          d3.select('body').on('mousemove',null)
+          d3.selectAll('.room').on('mouseover',null)
+
         }
     }
   // }
@@ -467,14 +485,22 @@ drop(ev) {
   template: `<ion-list>
   <ion-item button id='res_but' (click)='activateResize()'>Resize</ion-item>
   <ion-item button>Move</ion-item>
-  <ion-item button>Showcase</ion-item>
+  <ion-item button (click)='remRoom()'>Remove</ion-item>
 </ion-list>`,
 })
 export class ContextComponent {
   constructor(public a:HomePage){}
+  resizeRoom = false;
+  removeRoom = false;
   activateResize(){
-    alert('resize')
-    this.a.dismissPopover()
+    this.resizeRoom =true;
+    let ev ={ resize: this.resizeRoom, remove: this.removeRoom }
+    this.a.dismissPopover(ev);
+  }
+  remRoom(){
+    this.removeRoom =true;
+    let ev ={ resize: this.resizeRoom, remove: this.removeRoom }
+    this.a.dismissPopover(ev);
   }
 }
 
