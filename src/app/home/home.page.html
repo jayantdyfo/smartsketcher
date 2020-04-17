@@ -13,6 +13,7 @@
     </ion-toolbar>
   </ion-header>
 
+<<<<<<< HEAD
   <div id="container" style="padding:0% 0%" (drop)="drop($event)" (dragover)="allowDrop($event)">
     <div id="layout" >
       <!-- <svg viewBox="0 10 1050 650"width="1050" height="650" style="border:1px solid black; margin-top:2%"></svg> -->
@@ -47,24 +48,7 @@
           Draw Polygon with Line
         </ion-item> -->
 
-        <!-- <ion-button expand='block'>Door</ion-button>
-        <ion-button expand='block'>Floor</ion-button>
-        <ion-item *ngFor='let f of floor'>
-          <img src="{{f.img}}" alt="">
-        </ion-item>
-      </div>
-      <div class="dev-tool" *ngIf='props=="Device"'>
-        <ion-item *ngFor='let dev of devices'>
-         <img src="{{dev.img}}"  alt="" draggable="true" (dragstart)="drag($event,dev.img)">
-        </ion-item>
-      </div>
-      <div class="deco-tool" *ngIf='props=="Decorations"'>
-        <ion-item *ngFor='let deco of decorations'>
-         <img src="{{deco.img}}"  alt="" draggable="true" (dragstart)="drag($event,deco.img)">
-        </ion-item>
-      </div>
-  </div>
-</ion-content> --> -->
+       
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
@@ -85,18 +69,16 @@
       <!-- <svg viewBox="0 10 1050 650"width="1050" height="650" style="border:1px solid black; margin-top:2%"></svg> -->
       <ng-container *ngComponentOutlet="viewDetails"></ng-container>
     </div>
-
+<!-- <div id="container" style="padding:0% 0%">
+    <svg id="house" height = '100%' width = '95%' xmlns="http://www.w3.org/2000/svg" style="border: 1px solid;" >
+      <defs>
+ </defs>
+    </svg>
+  </div> -->
   </div>
-
-
-
-
-
-  <!-- side panel.................................................................... -->
+<!-- side panel.................................................................... -->
   <div id="props">
     <ion-button expand='block'>
-      <!-- <ion-icon name="{{iconname}}"></ion-icon> -->
-      <!-- <ion-icon name="md-arrow-dropdown"></ion-icon> -->
       <ion-select [(ngModel)]="props" (ionChange)='selectProps($event)' interface="popover" text-wrap>
         <ion-select-option *ngFor="let props of properties" [value]="props">{{props}}</ion-select-option>
       </ion-select>
@@ -109,25 +91,20 @@
           <ion-icon (click)='select($event, "polygon")' name="create"></ion-icon>
           Draw Polygon with Line
         </ion-item>
-        <!-- <ion-item>
-          <ion-icon (click)='line($event, "polygon")' name="remove"></ion-icon>
-          Draw Polygon with Line
-        </ion-item> -->
-
         <ion-button expand='block'>Door</ion-button>
         <ion-button expand='block'>Floor</ion-button>
         <ion-item *ngFor='let f of floor'>
-          <img src="{{f.img}}" alt="">
+          <img class="floor" (mouseover)="drag($event, f)" src="{{f.img}}" alt="">
         </ion-item>
       </div>
       <div class="dev-tool" *ngIf='props=="Device"'>
         <ion-item *ngFor='let dev of devices'>
-         <img src="{{dev.img}}"  alt="" draggable="true" (dragstart)="drag($event,dev.img)">
+         <img class="device" src="{{dev.img}}"  alt="" draggable="true" (dragstart)="drag1($event,dev.img)">
         </ion-item>
       </div>
       <div class="deco-tool" *ngIf='props=="Decorations"'>
         <ion-item *ngFor='let deco of decorations'>
-         <img src="{{deco.img}}"  alt="" draggable="true" (dragstart)="drag($event,deco.img)">
+         <img class="deco" src="{{deco.img}}"  alt="" draggable="true" (dragstart)="drag1($event,deco.img)">
         </ion-item>
       </div>
   </div>

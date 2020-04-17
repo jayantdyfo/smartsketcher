@@ -12,12 +12,13 @@ import * as $ from 'jquery'
 import { ViewLayoutComponent } from './view-layout/view-layout.component';
 import { VariableService } from './services/variable.service';
 import { UserService } from './services/user.service';
+import { ContextComponent, HomePage } from './home/home.page';
 
 @NgModule({
-  declarations: [AppComponent, ViewLayoutComponent],
+  declarations: [AppComponent, ViewLayoutComponent,ContextComponent],
   entryComponents: [
         // HomeComponent,
-        ViewLayoutComponent,
+        ViewLayoutComponent,ContextComponent
   ],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
   providers: [
@@ -26,7 +27,7 @@ import { UserService } from './services/user.service';
     UserService,
     ViewLayoutComponent,
     VariableService,
-    // HomeComponent,
+    HomePage,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent],
