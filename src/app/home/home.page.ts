@@ -19,9 +19,9 @@ export class HomePage {
   x;
   y;
   image;
-  x1:number;
-  x2:number;
-  y1:number;
+  x1;
+  x2:number; 
+  y1;
   y2:number;
   svg;
   propbox = false;
@@ -61,9 +61,6 @@ export class HomePage {
     {img:'assets/img/television.png'},
     {img:'assets/img/dining-set.png'},
     {img:'assets/img/cooler.png'},
-    // {img:'assets/img/bed_7.png'},
-    // {img:'assets/img/bed_7.png'},
-    // {img:'assets/img/bed_7.png'},
   ];
   floor=[
     {img:'assets/img/floor.png'},
@@ -86,14 +83,13 @@ export class HomePage {
     {img:'assets/img/tiles16.png'},
   ];
   props=this.properties[0]
-  data;
-  // export default data;  
+  data;  
 
   ngOnInit() {
     // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
     // this.showarray = this.user.rapidPageValue;
     var width = 1050;
-    var height = 650;
+    var height = 680;
     this.svg = d3.select("#layout")
     .append("svg")
    .attr("width", width)
@@ -102,23 +98,17 @@ export class HomePage {
     style('margin','-7%');
   //this.svg=document.querySelector('svg');
   }
-
-
-
-
-
-
-  selectProps(e){
+selectProps(e){
     //console.log(e)
   }
   roomNo=0;
   select(ev, toolname){
     var self=this;
-    console.log(ev)
+    //console.log(ev)
     let house = document.getElementById('container');
       house.style.cursor='crosshair';
     if(toolname=='rectangle'){
-      self=this;
+      //self=this;
       $(function() {
         $("svg").mousedown(function(e) {
         
@@ -140,71 +130,100 @@ export class HomePage {
       
     }
     if(toolname=='polygon'){
+      var self=this;
+      //console.log(d3.select('svg'));
+      d3.selectAll('svg').
+       on('mousedown', 
+       //this.pointx1
+       function(){
+        var x=d3.event.x-82;
+        var y=d3.event.y-66;
+       self.pointx1(x,y)
+      }
+      )
+      // .on('mousemove',function(){
+      //   self.x1=d3.event.x;
+      //   self.x1=d3.event.y
+      // })
     
-    $(function() {
-      $("svg").mousedown(function(e) {
+    // $(function() {
+    //   $("svg").mousedown(function(e) {
       
-        var offset = $(this).offset(); 
-      self.x1 = (e.pageX - offset.left);
-      self.y1 = (e.pageY - offset.top);
-      });
-      });
-      $(function() {
-        $("svg").mouseup(function(e) {
+    //     var offset = $(this).offset(); 
+    //   self.x1 = (e.pageX - offset.left);
+    //   self.y1 = (e.pageY - offset.top);
+    //   });
+    //   });
+    //   $(function() {
+    //     $("svg").mouseup(function(e) {
         
-          var offset = $(this).offset();
-          self.x2 = (e.pageX - offset.left);
-          self.y2 = (e.pageY - offset.top);
-         });
-        });
-  // alert("x1"+self.x1+"y1"+self.y2+"x2"+self.x2+"y2"+self.y2);
-    this.svg.append("line")
-       .attr("x1", self.x1)
-       .attr("x2", self.x2)
-       .attr("y1", self.y1)
-       .attr("y2", self.y2)
-       .attr("stroke", "black")
-       .attr('stroke-width','3')
-     }
+    //       var offset = $(this).offset();
+    //       self.x2 = (e.pageX - offset.left);
+    //       self.y2 = (e.pageY - offset.top);
+    //      });
+    //     });
+    alert()
+    
+    }
  }
+
+
   allowDrop(ev) {
   ev.preventDefault();
 }
-
+pointx1(x,y){
+  var self=this;
+  // var x=d3.event.x-27;
+  // var y=d3.event.y-66;
+   d3.selectAll('svg')
+  //  .on('mouseover',function(){
+  //   var x1=d3.event.x-27;
+  //    var y1=d3.event.y-66;
+  //    self.draw(x,y,x1,y1)
+  //  })
+  .on('mouseup',function(){
+    var x1=d3.event.x-82;
+     var y1=d3.event.y-66;
+     self.draw(x,y,x1,y1)
+   })
+  // 
+}
+draw(x,y,x1,y1){
+//alert("1st"+'   ' +x+'    ' +y)
+//alert(x1+'    ' +y1)
+d3.selectAll('svg'). append("line")
+.attr("x1", x)
+.attr("x2", x1)
+.attr("y1", y)
+.attr("y2", y1)
+.attr("stroke", "black")
+.attr('stroke-width','3')
+// //alert("1st"+'   ' +x+'    ' +y)
+//    alert(self.x1+'    ' +self.y1)
+}
  drag(ev,path) {
- //localStorage.setItem('data',ev.currentTarget);
+   var self=this;
  let element=ev.currentTarget;
  this.image=path;
  element.classList.add("mystyle");
 console.log(element)
- //alert(data)
-//  alert(ev.currentTarget)
-//  console.log(ev.currentTarget)
-
+d3.selectAll('svg').
+on('drop',function(){
+   var x=d3.event.x-110;
+  var y=d3.event.y-110;
+  self.drop(x,y);
+})
 }
 
-drop(ev) {
- // ev.preventDefault();
-  console.log(ev.target)
+drop(x,y) {
 let self=this;
-  //var data = localStorage.getData("data");
-  var data=document.querySelectorAll('.mystyle');
-  let target=document.querySelector('svg');
-  $(function() {
-    $("svg").mousedown(function(e) {
-    
-      var offset = $(this).offset();
-    self.x = (e.pageX - offset.left);
-    self.y= (e.pageY - offset.top);
-     });
-    });
- //alert(data)
- this.svg.append('image')
+d3.selectAll('svg') .append('image')
        .attr("href",this.image)
-      .attr("x", self.x)
-      .attr("y", self.y)
+      .attr("x", x)
+      .attr("y", y)
        .attr("width", "6%")
        .attr("height", "6%")
+       alert(x+ '   '+y)
       //  .attr('stroke-width','3')
      }
 //  for(let i=0;i<data.length;i++){
@@ -213,3 +232,4 @@ let self=this;
 //  }
 //}
 }
+
