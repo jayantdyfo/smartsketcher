@@ -16,7 +16,8 @@ export class UserService implements  AfterContentChecked {
     ) { }
 
   webServerHost = this.variableService.serverHost + ":" + this.variableService.serverPort;
-
+ public sel_Element=[];
+ public res_room = false;
   // grouping variables
   groupingview = false;
   showhtml = false;

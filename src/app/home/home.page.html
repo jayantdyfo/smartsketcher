@@ -3,18 +3,14 @@
     <ion-title>
       SmartSketcher
     </ion-title>
+    <ion-button (click)='saveView()' color='success' style='position: absolute; right: 10px; top: 0; width: 270px;'><span>Done</span></ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large" >Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
   <div id="container" style="padding:0% 0%">
-    <svg id="house" height = '100%' width = '95%' xmlns="http://www.w3.org/2000/svg" style="border: 1px solid;" >
+    <svg id="house" height = '100%' width = '95%' xmlns="http://www.w3.org/2000/svg" style="border: 1px solid;" preserveAspectRatio="xMinYMin meet" version="1.1" viewBox="0 0 100 100">
       <defs>
 
       </defs>
@@ -52,6 +48,12 @@
         </ion-item> -->
 
         <ion-button expand='block'>Door</ion-button>
+          <ion-item>
+            <img class="door" (click)='sel_door("slider")' src="assets/img/sliderDoor.png">
+          </ion-item>
+          <ion-item>
+            <img class="door" (click)='sel_door("door")' src="assets/img/door1.jpg">
+          </ion-item>
         <ion-button expand='block'>Floor</ion-button>
         <ion-item *ngFor='let f of floor'>
           <img class="floor" (mouseover)="drag($event, f)" src="{{f.img}}" alt="">

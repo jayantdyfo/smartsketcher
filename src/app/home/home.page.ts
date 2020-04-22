@@ -130,30 +130,7 @@ export class HomePage {
               self.createRoom()
               house.style('cursor','default');
               self.toolname='none';
-            })
-           
-        
-
-      $(function() {
-        
-          // self.makeDraggable(evt)
-          // if(evt.which==3){
-          //   evt.preventDefault();
-          //   $(evt.target).remove();
-          // }
-
-
-        // let el = document.querySelector('rect');
-        // if (document.addEventListener) {
-        //   el.addEventListener('contextmenu', function(e) {
-        //     // if(e.target. == 'rect')
-        //     console.log(e)
-        //     alert(JSON.stringify(e)+'ddddd'); //here you draw your own menu
-            
-        //     e.preventDefault();
-        //   }, false);
-        // }
-      })    
+            })  
     }
    
    
@@ -223,12 +200,30 @@ async presentPopover(ev: any) {
   return await popover.present();
 }
 async dismissPopover(ev) {    
-   this.popoverController.dismiss().then(() => { });
+  let that = this;
+   this.popoverController.dismiss().then(() => {
+     if(ev.remove){
+      d3.select('#resDoor').remove();
+      d3.select('#resizeW').remove();
+      d3.select('#resizeH').remove();
+       d3.select('#'+that.user.sel_Element[0].sel_id).remove()
+     } else if(ev.resize == true && that.user.sel_Element[0].sel_el == 'door'){
+        // d3.select('#'+that.user.sel_Element[0].sel_id).on('drag', null);
+        that.editDoor(that.user.sel_Element[0].sel_id)
+     } else if(that.user.sel_Element[0].sel_el == 'door' && ev.rotate == true){
+        that.rotateDoor(that.user.sel_Element[0].sel_id)
+     } else if(ev.move == true && that.user.sel_Element[0].sel_el == 'door'){
+        that.move(that.user.sel_Element[0].sel_id)
+     }
+   });
 }
 // ...........menu end......................
+roomNO = 0;
 
 createRoom(){
   let that = this;
+  that.roomNO +=1 
+  let r_id = that.roomNO;
  const selector = d3.select("#house");
   selector.on('click', null)
   selector.append("rect").
@@ -237,8 +232,9 @@ createRoom(){
   attr('width','50').
   attr('height','50').
   attr('stroke','rgb(79, 39, 39)').
-  attr('stroke-width','4').
+  attr('stroke-width','5').
   attr('fill','transparent').
+  attr('id','r-'+r_id).
   attr('class','room').style('z-index','0')
   
 //  ...to move element.....................
@@ -276,8 +272,10 @@ function started() {
 // ....right click ........
 allRect.on('contextmenu', function(d,i){
   d3.event.preventDefault();
+  that.user.sel_Element.length=0;
+  that.user.sel_Element.push({sel_id : d3.select(this).attr('id'), sel_el: 'room'})
   console.log(''+d+'--' + i);
-  that.presentPopover(d)
+  that.presentPopover(d);
 })
 // right click end................
 
@@ -290,8 +288,8 @@ function toResize(){
   if(toggle){
     d3.select('#resizeH').remove()
     d3.select('#resizeW').remove()
-    allRect.style('cursor', 'move');
-    allRect.call(d3.drag().on("start", started))
+    d3.select(this).style('cursor', 'move');
+    d3.select(this).call(d3.drag().on("start", started))
     // d3.event.preventDefault();
     let curEl = d3.select(this)
     // ...........
@@ -372,11 +370,9 @@ function toResize(){
 
 // .... To set floor...........................................
 drag(e, fl) {
-  // console.log(fl_Img.sl)
   // d3.event.preventDefault()
   let floor = d3.select(e.target).style('border','2px solid blue')
     floor.on('mouseleave', ()=>{floor.raise().style('border','none')})
-  // function setFloor() {
     // d3.select(this).attr('pointer-events', 'none');
     floor.on("mousedown", pick)
     function pick(d) {
@@ -435,17 +431,7 @@ drag(e, fl) {
 
         }
     }
-  // }
-
-  let svgEL = d3.selectAll('rect')
-  // svgEL.on('mousemove',selectEL)
-  // function selectEL(){
-  //   let el=d3.select(this).raise().attr('stroke','blue')
-  //   el.on('mouseleave',sel_rem)
-  // }
-  // function sel_rem(){
-  //   d3.select(this).raise().attr('stroke','rgb(79, 39, 39)')
-  // }
+  
 }
 
 drop(ev) {
@@ -473,9 +459,174 @@ drop(ev) {
         //  .attr('stroke-width','3')
       }
 
+      doorNO = 0;
+      sel_door(type){
+        let that = this;
+        d3.select('#temp_door').remove();
+        // that.doorNO += 1;
+        let door;
+        if(type == 'slider'){
+         door = d3.select('#house').append('rect')
+          .attr('height',4)
+          .attr('width',50)
+          .attr('stroke','yellow')
+          .attr('stroke-width',5)
+          .attr('x',0)
+          .attr('y',0)
+          .attr('class','door')
+          .attr('id','temp_door');
+          doorWithMouse()
+        } else
+        if(type =='door') {
+    
+        }
+      function doorWithMouse(){
+        d3.select('#house').on('mousemove',()=>{
+          door.raise().attr('x',d3.event.x-30)
+          .raise().attr('y',d3.event.y-40)
+        })
+        
+      }
+      d3.selectAll('.room').on('mouseover',highlite)
+      function highlite(){
+        d3.select(this).raise().attr('stroke','blue')
+        d3.select(this).on('click',()=>{that.putDoor(this, door)})
+      
+      d3.select(this).on('mouseleave',()=>{d3.select(this).raise().attr('stroke','rgb(79, 39, 39)')})
+      }
+    }
+    putDoor(ev, door){
+      let that = this;
+      that.doorNO += 1;
+      let mouse = d3.mouse(ev)
+      d3.select(ev).raise().attr('stroke','rgb(79, 39, 39)')
+      .on('click', null)
+      d3.selectAll('.room').on('mouseover',null)
+      .on('mouseleave',null)
+      d3.select('#house').on('mousemove',null)
+      door.raise().attr('id','door'+that.doorNO).raise().attr('x',mouse[0])
+      .attr('y',mouse[1])
+      d3.selectAll('.door').on('contextmenu', function(){
+                  that.rightClickOnDoor(this)
+      })
+    }
+    rightClickOnDoor(ev){
+      let that=this;
+        d3.event.preventDefault();
+        that.user.sel_Element.length=0;
+        that.user.sel_Element.push({sel_id : d3.select(ev).attr('id'), sel_el: 'door'})
+        that.presentPopover('door');
+    }
+
+    editDoor(el_id){
+      let that = this;
+      let el = d3.select('#'+el_id).style('cursor','default')
+                  .call(d3.drag().on('start',null).on('drag',null).on('end',null))
+      let h = parseFloat(el.attr('height'))
+      let w = parseFloat(el.attr('width'))
+      let x = parseFloat(el.attr('x'))
+      let y = parseFloat(el.attr('y'))
+      // d3.select('svg').append('image').attr('x',el.attr('x')).attr('y',parseFloat(el.attr('y'))-10)
+      // .attr('xlink:href','assets/icon/icon-minus.png')
+      // .attr('height',30)
+      // .attr('width',30)
+      if(h < w){
+        d3.select('svg').append('rect')
+                        .attr('id','resDoor')
+                        .attr('x',x+w+4)
+                        .attr('y',y)
+                        .attr('height',4)
+                        .attr('width',4)
+                        .style('cursor','ew-resize')
+                        .attr('stroke','red')
+                        .attr('stroke-width','4')
+                        .call(d3.drag().on('start', function(){that.resize(el,this, 'w')}))
+      } else {
+        d3.select('svg').append('rect')
+                        .attr('id','resDoor')
+                        .attr('x',x)
+                        .attr('y',y+h+4)
+                        .attr('height',4)
+                        .attr('width',4)
+                        .style('cursor','ns-resize')
+                        .attr('stroke','red')
+                        .attr('stroke-width','4')
+                        .call(d3.drag().on('start', function(){that.resize(el, this, 'h')}))
+      }
+      el.on('click', ()=> {d3.select('#resDoor').remove()})
+    }
 
 
+    rotateDoor(el_id){
+      d3.select('#resDoor').remove();
+     let el = d3.select('#'+el_id)
+     let h = el.attr('height')
+     let w = el.attr('width')
+     el.raise().attr('height',w)
+     el.raise().attr('width',h)
+    }
+  
+    resize(currentEL,barEl,changeProp){
+      let that = this;
+      let dragBar = d3.select(barEl);
+      let dragBarOrigin = {x: parseFloat(dragBar.attr('x')), y: parseFloat(dragBar.attr('y'))}
+      let prePoint = {x:d3.event.x, y: d3.event.y}
+      let curElProp ={w:parseFloat(currentEL.attr('width')), h:parseFloat(currentEL.attr('height'))}
+      // let clickDiff = {x:(d3.event.x-curElOrigin.x), y:(d3.event.y-curElOrigin.y)}
+      d3.event.on("drag", dragged).on("end", ended)
+      function dragged(d) {
+        let diff = {x: prePoint.x - d3.event.x, y: prePoint.y - d3.event.y}
+        if(changeProp=='w'){
+          currentEL.raise().attr("width", curElProp.w-diff.x);
+          dragBar.raise().attr('x',dragBarOrigin.x-diff.x)
+        } else if(changeProp=='h'){
+          currentEL.raise().attr("height", curElProp.h-diff.y);
+          dragBar.raise().attr('y',dragBarOrigin.y-diff.y)
+        }
+        
+      }
+      function ended(d) {
+        currentEL.classed("dragging", false);
+      }
+    }
+
+    move(el_id){
+      let that = this;
+      d3.select('#resDoor').remove();
+      let el = d3.select('#'+el_id).call(d3.drag().on('start',started))  
+      el.style('cursor','move')    
+      function started() {
+        var currentEL = el
+        let curElOrigin ={x:parseFloat(currentEL.attr('x')), y:parseFloat(currentEL.attr('y'))}
+        let clickDiff = {x:(d3.event.x-curElOrigin.x), y:(d3.event.y-curElOrigin.y)}
+        d3.event.on("drag", dragged).on("end", ended)
+        function dragged(d) {
+          currentEL.raise().attr("x", that.x = d3.event.x-clickDiff.x).attr("y", that.y = d3.event.y-clickDiff.y);
+        }
+        function ended(d) {
+          currentEL.classed("dragging", false);
+        }
+      };
+    }
+
+
+    saveView(){
+      
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -484,14 +635,17 @@ drop(ev) {
   selector: 'context',
   template: `<ion-list>
   <ion-item button id='res_but' (click)='activateResize()'>Resize</ion-item>
-  <ion-item button>Move</ion-item>
+  <ion-item button (click)='move()'>Move</ion-item>
   <ion-item button (click)='remRoom()'>Remove</ion-item>
+  <ion-item button *ngIf='user.sel_Element[0].sel_el == "door"' (click)='rotate()'>Rotate</ion-item>
 </ion-list>`,
 })
 export class ContextComponent {
-  constructor(public a:HomePage){}
+  constructor(public a:HomePage, private user: UserService){}
   resizeRoom = false;
   removeRoom = false;
+  rotatedoor = false;
+  move_el = false;
   activateResize(){
     this.resizeRoom =true;
     let ev ={ resize: this.resizeRoom, remove: this.removeRoom }
@@ -499,8 +653,19 @@ export class ContextComponent {
   }
   remRoom(){
     this.removeRoom =true;
-    let ev ={ resize: this.resizeRoom, remove: this.removeRoom }
+    let ev = { resize: this.resizeRoom, remove: this.removeRoom }
     this.a.dismissPopover(ev);
   }
+  rotate(){
+    this.rotatedoor = true;
+    let ev = { resize: this.resizeRoom, remove: this.removeRoom, rotate: this.rotatedoor }
+    this.a.dismissPopover(ev);
+  }
+  move(){
+    this.move_el = true;
+    let ev = { move: this.move_el, resize: this.resizeRoom, remove: this.removeRoom, rotate: this.rotatedoor }
+    this.a.dismissPopover(ev);
+  }
+
 }
 
