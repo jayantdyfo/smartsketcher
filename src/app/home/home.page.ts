@@ -4,6 +4,7 @@ import { ViewLayoutComponent } from '../view-layout/view-layout.component';
 import * as d3 from 'd3';
 import { PopoverController } from '@ionic/angular';
 import { drag } from 'd3';
+import { DriverProvider } from 'protractor/built/driverProviders';
 
 @Component({
   selector: 'app-home',
@@ -22,6 +23,7 @@ export class HomePage {
   iconname='square-outline'
   x; //..x,y for rect......
   y;
+  i=0;
   image;
   x1;
   x2:number; 
@@ -100,8 +102,12 @@ export class HomePage {
    .attr("width", width)
     .attr("height", height)
     .style('border',"1px solid black").
-    style('margin','-7%');
+    style('margin','-7%')
+    .append('defs');
+    //.append('polygon')
+    
   //this.svg=document.querySelector('svg');
+  
   }
 
   selectProps(e){
@@ -111,10 +117,8 @@ export class HomePage {
   selectedElement;
   offset
   toolname='none';
-  
-  select(ev, tool){
+   select(ev, tool){
     document.getElementById('layout').style.cursor = "crosshair";
-
     window['d3'] = d3;
     var self=this;
     d3.select('#tempImg').remove();
@@ -130,9 +134,7 @@ export class HomePage {
               house.style('cursor','crosshair');
               self.toolname='none';
             })
-           
-           
-    }
+           }
     if(self.toolname=='polygon'){
       var self=this;
       //console.log(d3.select('svg'));
@@ -143,16 +145,119 @@ export class HomePage {
         var x=d3.event.x-82;
         var y=d3.event.y-66;
        self.pointx1(x,y)
-      }
-      )
-      // .on('mousemove',function(){
-      //   self.x1=d3.event.x;
-      //   self.x1=d3.event.y
-      // })
-    
+      })
+    }
+    if(self.toolname=='L_shape'){
+      var self=this;
+      //console.log(d3.select('svg'));
+      d3.selectAll('svg').
+       on('click', 
+       function(){
+        var x=d3.event.x-82;
+        var y=d3.event.y-66;
+       self.lshape(x,y)
+      })
+    }
+    if(self.toolname=='U_shape'){
+      var self=this;
+      //console.log(d3.select('svg'));
+      d3.selectAll('svg').
+       on('click', 
+       //this.pointx1
+       function(){
+        var x=d3.event.x-82;
+        var y=d3.event.y-66;
+       self.ushape(x,y)
+      })
+    }
+    if(self.toolname=='T_shape'){
+      var self=this;
+     
+      //console.log(d3.select('svg'));
+      d3.selectAll('svg').
+       on('click', 
+       //this.pointx1
+       function(){
+        var x=d3.event.x-82;
+        var y=d3.event.y-66;
+       self.tshape(x,y)
+      })
     }
  }
+ lshape(x,y){
+    var poly=[{"x":x, "y":y},
+    {"x":x,"y":y+150},
+    {"x":x+150,"y":y+150},
+    {"x":x+150,"y":y+120},
+    {"x":x+30,"y":y+120}, 
+    {"x":x+30,"y":y}];   
+//     var xScale = d3.scaleLinear().domain([0,5]).range([25,175]);
+// var yScale = d3.scaleLinear().domain([0,5]).range([175,25]);
+//     var points = d3.data.map((d) => [xScale(d.x), yScale(d.y)]);
+//     var hull = d3.polygonHull(points);            
+    d3.selectAll("svg").selectAll('polygon')
+    .data([poly])
+  .enter().append("polygon")
+    .attr("points",function(d) { 
+        return d.map(function(d) {
+            return [(d.x),(d.y)].join(",");
+        }).join(" ");
+    }).attr('fill','none').attr('stroke','black').attr('stroke-width',3);
+    console.log(d3.selectAll('polygon'))
+ }
+ ushape(x,y){
+   var poly=[{'x':x,'y':y},
+              {'x':x,'y':y+150}, 
+              {'x':x+200,'y':y+150},
+              {'x':x+200,'y':y},
+              {'x':x+160,'y':y},
+              {'x':x+160,'y':y+120},
+              {'x':x+40,'y':y+120},
+              {'x':x+40,'y':y}
+             ]
+  d3.selectAll("svg").selectAll('polygon')
+  //   .data([poly])
+  // .enter().append("polygon")
+  //   .attr("points",function(d) { 
+  //       return d.map(function(d) {
+  //           return [(d.x),(d.y)].join(",");
+  //       }).join(" ");
+  //   }).attr('fill','none').attr('stroke','black').attr('stroke-width',3);
+   // alert('UUUUUUUUUUUUUUU')
+   console.log(d3.selectAll('polygon'))
+ }
+tshape(x,y){
+  var poly=[{'x':x,'y':y},
+  {'x':x,'y':y+40}, 
+  {'x':x+60,'y':y+40},
+  {'x':x+60,'y':y+200},
+  {'x':x+100,'y':y+200},
+  {'x':x+100,'y':y+40},
+  {'x':x+160,'y':y+40},
+  {'x':x+160,'y':y}
+ ]
+  // d3.selectAll("svg").selectAll('polygon')
+  //   .data([poly])
+  // .enter().append("polygon")
+  //   .attr("points",function(d) { 
+  //       return d.map(function(d) {
+  //           return [(d.x),(d.y)].join(",");
+  //       }).join(" ");
+  //   }).attr('fill','none').attr('stroke','black').attr('stroke-width',3);
 
+    // //alert('TTTTTTTTTTtt')
+    // console.log(d3.selectAll('polygon'))
+    
+    // d3.selectAll("svg").append('polygon').attr('points', points).attr('fill','none').attr('stroke','black').attr('stroke-width',3);
+    var points= function(){
+       
+    }
+    
+    // .data(myData)
+    // .text(function (d, i) {
+    //      return d;
+    // });
+}
 allowDrop(ev) {
   ev.preventDefault();
 }
@@ -168,6 +273,7 @@ pointx1(x,y){
 }
 
 draw(x,y,x1,y1){
+let self=this;
 d3.selectAll('svg'). append("line")
 .attr("x1", x)
 .attr("x2", x1)
@@ -175,34 +281,84 @@ d3.selectAll('svg'). append("line")
 .attr("y2", y1)
 .attr("stroke", "black")
 .attr('stroke-width','3')
-.attr('class','room').style('z-index','0')
-}
+.attr('class','room').style('z-index','0').on('click',function(){
+  self.drawPolygon()
+})
 
+}
+drawPolygon(){
+  alert("dyhjk")
+
+}
  drag1(ev,path) {
    var self=this;
  let element=ev.currentTarget;
  this.image=path;
  element.classList.add("mystyle");
-console.log(element)
-d3.selectAll('svg').
-on('drop',function(){
-   var x=d3.event.x-110;
-  var y=d3.event.y-110;
-  self.drop(x,y);
-})
+  let allRect = d3.selectAll('rect').on('click',function(){
+  // self.drop(x,y);
+  console.log(d3.event)
+  d3.select(this).attr('stroke','red');
+  var x1=d3.select(this).attr('x');
+  var y1=d3.select(this).attr('y')
+  var x=d3.event.offsetX-7;
+   var y=d3.event.offsetY-7; 
+  // alert(x+'     '+y);
+   self.drop(x,y)
+  })
+  
+//})
 }
 
 drop(x,y) {
 let self=this;
+
+this.i=this.i+1
 d3.selectAll('svg') .append('image')
-       .attr("href",this.image)
+       .attr("xlink:href",this.image)
       .attr("x", x)
       .attr("y", y)
+      .attr('id',"img"+this.i)
        .attr("width", "6%")
-       .attr("height", "6%")
-       alert(x+ '   '+y)
+       .attr("height", "6%").classed('dragImg',true)
+     d3.selectAll('.dragImg').on('click',this.delete);
      }
-
+     delete(){
+       var del=d3.event.target.id
+       alert(del);
+       d3.select("#"+del).remove();
+     }
+    // Drag(){
+    //   d3.drag()
+    //   // .origin(function(d) { return d; })
+		// 	.on("dragstart", this.dragstarted)
+		// .on("drag", this.dragged);
+    // }
+    // var Drag = d3.behavior.drag()
+		// 		.origin(function(d) { return d; })
+		// 		.on("dragstart", dragstarted)
+		// 		.on("drag", dragged);
+			
+			//Called when drag event starts. It stop the propagation of the click event
+			 dragstarted(d){
+				d3.event.sourceEvent.stopPropagation();
+			}
+			
+			//Called when the drag event occurs (object should be moved)
+			dragged(d){
+        var self=this;
+        d.x = d3.event.x;
+        alert("gdjhfdksjbl")
+				d.y = d3.event.y;
+				//Translate the object on the actual moved point
+				// d3.select(this).attr({
+				// 	transform: "translate(" + d.x + "," + d.y + ")"
+				// });
+			}
+			
+dragNResize(){
+ alert("dvdshhvk")
+}
 getPointerOnSVG(){
   let self = this;
   $("svg").mousedown(function(e) {
@@ -363,8 +519,6 @@ function toResize(){
     d3.select('#resizeW').remove()
   }
 }
-
-
 }
 
 // .... To set floor...........................................
