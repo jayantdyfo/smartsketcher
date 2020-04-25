@@ -15,6 +15,7 @@
 
   <div id="container" style="padding:0% 0%" (dragover)="allowDrop($event)">
     <div id="layout" >
+      <!-- <svg viewBox="0 10 1050 650"width="1050" height="650" style="border:1px solid black; margin-top:2%"></svg> -->
       <ng-container *ngComponentOutlet="viewDetails"></ng-container>
     </div>
 
@@ -29,11 +30,12 @@
       <div class="room-tool" *ngIf='props=="Room"'>
         <ion-item>
           <ion-icon (click)='select($event, "rectangle")' name="square-outline"></ion-icon>
+          Square & Rectangle Room
         </ion-item>
-        <ion-item>
+        <!-- <ion-item>
           <ion-icon (click)='select($event, "polygon")' name="create"></ion-icon>
           Draw Polygon with Line
-        </ion-item>
+        </ion-item> -->
         <ion-item>
           <ion-img (click)='select($event, "L_shape")' style="width:40%" src="assets/img/L_shape.png"></ion-img>
           L shape Room 

@@ -90,13 +90,14 @@ export class HomePage {
   ];
   props=this.properties[0]
   data;  
-
+ index
   ngOnInit() {
     // this.drag()
     // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
     // this.showarray = this.user.rapidPageValue;
     var width = 1050;
     var height = 680;
+    this.index=0;
     this.svg = d3.select("#layout")
     .append("svg")
    .attr("width", width)
@@ -124,7 +125,7 @@ export class HomePage {
     d3.select('#tempImg').remove();
     self.toolname=tool;
       let house = d3.selectAll("svg");
-      console.log(house)
+      //console.log(house)
       house.raise().style('cursor','cell');
         if(self.toolname=='rectangle'){
           self=this;
@@ -153,9 +154,10 @@ export class HomePage {
       d3.selectAll('svg').
        on('click', 
        function(){
-        var x=d3.event.x-82;
-        var y=d3.event.y-66;
-       self.lshape(x,y)
+         let points=d3.mouse(d3.event.currentTarget)
+        // var x=d3.event.x-82;
+        // var y=d3.event.y-66;
+       self.lshape(points)
       })
     }
     if(self.toolname=='U_shape'){
@@ -165,9 +167,10 @@ export class HomePage {
        on('click', 
        //this.pointx1
        function(){
-        var x=d3.event.x-82;
-        var y=d3.event.y-66;
-       self.ushape(x,y)
+        var points=d3.mouse(d3.event.currentTarget)
+        // var x=d3.event.x-82;
+        // var y=d3.event.y-66;
+       self.ushape(points)
       })
     }
     if(self.toolname=='T_shape'){
@@ -178,34 +181,105 @@ export class HomePage {
        on('click', 
        //this.pointx1
        function(){
-        var x=d3.event.x-82;
-        var y=d3.event.y-66;
-       self.tshape(x,y)
+         var points=d3.mouse(d3.event.currentTarget)
+        // var x=d3.event.x-82;
+        // var y=d3.event.y-66;
+       // alert(t)
+       self.tshape(points)
       })
     }
  }
- lshape(x,y){
+ lshape(coor){
+   let that =this;
+   let x=coor[0];
+   let y=coor[1];
+   //console.log(t)
     var poly=[{"x":x, "y":y},
     {"x":x,"y":y+150},
     {"x":x+150,"y":y+150},
     {"x":x+150,"y":y+120},
     {"x":x+30,"y":y+120}, 
-    {"x":x+30,"y":y}];   
-//     var xScale = d3.scaleLinear().domain([0,5]).range([25,175]);
-// var yScale = d3.scaleLinear().domain([0,5]).range([175,25]);
-//     var points = d3.data.map((d) => [xScale(d.x), yScale(d.y)]);
-//     var hull = d3.polygonHull(points);            
-    d3.selectAll("svg").selectAll('polygon')
+    {"x":x+30,"y":y}];       
+let polygonL=   d3.selectAll("svg").selectAll('polygon') 
+    d3.selectAll("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
     .data([poly])
   .enter().append("polygon")
     .attr("points",function(d) { 
         return d.map(function(d) {
             return [(d.x),(d.y)].join(",");
-        }).join(" ");
-    }).attr('fill','none').attr('stroke','black').attr('stroke-width',3);
-    console.log(d3.selectAll('polygon'))
+        }
+        ).join(" ");
+    }).attr('id','r-'+this.index+1+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',3);
+ var movePoly = d3.drag()
+                        .on("start", function () {
+                          d3.select(this).attr('stroke','red');
+                          d3.select(this).attr('cursor','grab');
+                          // d3.event.target.attr('stroke','red');
+                           //alert(d3.event.currentTarget);
+                         })
+                        .on("drag", function (d, i) {
+
+                            that.x = that.x || 0;
+                            that.y = that.y || 0;
+
+                            that.x += d3.event.dx;
+                            that.y += d3.event.dy;
+                            d3.select(this).attr("transform", "translate(" + that.x + "," + that.y + ")");
+
+                        })
+                        .on("end", function () {
+                          d3.select(this).attr("stroke", "black");
+                          d3.select(this).attr('cursor','auto');
+                          //d3.event.target.style('stroke','black');
+                        });
+ //var rotate=d3.event(this).attr('transform','rotate(90deg)')
+d3.selectAll("polygon").call(movePoly)
+d3.selectAll('polygon').on('contextmenu', function(d,i){
+  d3.event.preventDefault();
+  console.log(''+d+'--' + i);
+  that.presentPopover(d)
+})
  }
- ushape(x,y){
+//   drag2(){ 
+//     function dragstarted(d) {
+//       d3.select(this).raise().attr("stroke", "black");
+//     }
+  
+//     function dragged(d) {
+//       d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+//     }
+  
+//     function dragended(d) {
+//       d3.select(this).attr("stroke", null);
+//     }
+  
+//     return d3.drag()
+//         .on("start", dragstarted)
+//         .on("drag", dragged)
+//         .on("end", dragended);
+//  }
+//  movePoly={
+//   function dragstarted(d) {
+//     d3.select(this).raise().attr("stroke", "black");
+//   }
+
+//   function dragged(d) {
+//     d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+//   }
+
+//   function dragended(d) {
+//     d3.select(this).attr("stroke", null);
+//   }
+
+//   return d3.drag()
+//       .on("start", dragstarted)
+//       .on("drag", dragged)
+//       .on("end", dragended);
+//  }
+ ushape(coor){
+   let that=this;
+  let x=coor[0];
+  let y=coor[1];
    var poly=[{'x':x,'y':y},
               {'x':x,'y':y+150}, 
               {'x':x+200,'y':y+150},
@@ -215,18 +289,45 @@ export class HomePage {
               {'x':x+40,'y':y+120},
               {'x':x+40,'y':y}
              ]
-  d3.selectAll("svg").selectAll('polygon')
-  //   .data([poly])
-  // .enter().append("polygon")
-  //   .attr("points",function(d) { 
-  //       return d.map(function(d) {
-  //           return [(d.x),(d.y)].join(",");
-  //       }).join(" ");
-  //   }).attr('fill','none').attr('stroke','black').attr('stroke-width',3);
-   // alert('UUUUUUUUUUUUUUU')
-   console.log(d3.selectAll('polygon'))
+  d3.selectAll("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
+    .data([poly])
+  .enter().append("polygon")
+    .attr("points",function(d) { 
+        return d.map(function(d) {
+            return [(d.x),(d.y)].join(",");
+        }).join(" ");
+    }).attr('id','r-'+this.index+1+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',3);
+    var movePoly = d3.drag()
+                        .on("start", function () {
+                          d3.select(this).attr('stroke','red');
+                          d3.select(this).attr('cursor','grab');
+                          // d3.event.target.attr('stroke','red');
+                           //alert(d3.event.currentTarget);
+                         })
+                        .on("drag", function (d, i) {
+
+                            that.x = that.x || 0;
+                            that.y = that.y || 0;
+                            // that.x += d3.mouse(d3.event.currentTarget);
+                            // //that.y += d3.event.dy;{}
+                            // d3.select(this).attr("transform", "translate(" + that.x[0] + "," + that.x[1] + ")");
+                            that.x += d3.event.dx;
+                            that.y += d3.event.dy;
+                            d3.select(this).attr("transform", "translate(" + that.x + "," + that.y + ")");
+
+                        })
+                        .on("end", function () {
+                          d3.select(this).attr("stroke", "black");
+                          d3.select(this).attr('cursor','auto');
+                          //d3.event.target.style('stroke','black');
+                        });
+
+d3.selectAll("polygon").call(movePoly);
  }
-tshape(x,y){
+tshape(coor){
+  let that=this;
+  let x=coor[0];
+   let y=coor[1];
   var poly=[{'x':x,'y':y},
   {'x':x,'y':y+40}, 
   {'x':x+60,'y':y+40},
@@ -236,14 +337,14 @@ tshape(x,y){
   {'x':x+160,'y':y+40},
   {'x':x+160,'y':y}
  ]
-  // d3.selectAll("svg").selectAll('polygon')
-  //   .data([poly])
-  // .enter().append("polygon")
-  //   .attr("points",function(d) { 
-  //       return d.map(function(d) {
-  //           return [(d.x),(d.y)].join(",");
-  //       }).join(" ");
-  //   }).attr('fill','none').attr('stroke','black').attr('stroke-width',3);
+  d3.selectAll("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
+    .data([poly])
+  .enter().append("polygon")
+    .attr("points",function(d) { 
+        return d.map(function(d) {
+            return [(d.x),(d.y)].join(",");
+        }).join(" ");
+    }).attr('id','r-'+this.index+1+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',3);
 
     // //alert('TTTTTTTTTTtt')
     // console.log(d3.selectAll('polygon'))
@@ -252,7 +353,33 @@ tshape(x,y){
     var points= function(){
        
     }
-    
+    var movePoly = d3.drag()
+                        .on("start", function () {
+                          d3.select(this).attr('stroke','red');
+                          d3.select(this).attr('cursor','grab');
+                          // d3.event.target.attr('stroke','red');
+                           //alert(d3.event.currentTarget);
+                         })
+                        .on("drag", function (d, i) {
+
+                            that.x = that.x || 0;
+                            that.y = that.y || 0;
+                            // that.x += d3.mouse(d3.event.currentTarget);
+                            // //that.y += d3.event.dy;{}
+                            // d3.select(this).attr("transform", "translate(" + that.x[0] + "," + that.x[1] + ")");
+
+                            that.x += d3.event.dx;
+                            that.y += d3.event.dy;
+                            d3.select(this).attr("transform", "translate(" + that.x + "," + that.y + ")");
+
+                        })
+                        .on("end", function () {
+                          d3.select(this).attr("stroke", "black");
+                          d3.select(this).attr('cursor','auto');
+                          //d3.event.target.style('stroke','black');
+                        });
+
+d3.selectAll("polygon").call(movePoly);
     // .data(myData)
     // .text(function (d, i) {
     //      return d;
@@ -301,18 +428,24 @@ drawPolygon(){
   d3.select(this).attr('stroke','red');
   var x1=d3.select(this).attr('x');
   var y1=d3.select(this).attr('y')
-  var x=d3.event.offsetX-7;
+  var coor=d3.mouse(d3.event.currentTarget)
    var y=d3.event.offsetY-7; 
   // alert(x+'     '+y);
-   self.drop(x,y)
+   self.drop(coor)
   })
   
 //})
 }
-
-drop(x,y) {
+rotateRoom(){
+  alert("jvhfjhj")
+}
+// rotateRoom(){
+//   alert("jhgurherk")
+// }
+drop(dropPoints) {
 let self=this;
-
+let x=dropPoints[0];
+let y=dropPoints[1]
 this.i=this.i+1
 d3.selectAll('svg') .append('image')
        .attr("xlink:href",this.image)
@@ -615,20 +748,27 @@ drag(e, fl) {
   <ion-item button id='res_but' (click)='activateResize()'>Resize</ion-item>
   <ion-item button>Move</ion-item>
   <ion-item button (click)='remRoom()'>Remove</ion-item>
+  <ion-item button (click)='rotateRoom()'>Rotate</ion-item>
 </ion-list>`,
 })
 export class ContextComponent {
   constructor(public a:HomePage){}
   resizeRoom = false;
   removeRoom = false;
+  rotateRooms=false;
   activateResize(){
     this.resizeRoom =true;
-    let ev ={ resize: this.resizeRoom, remove: this.removeRoom }
+    let ev ={ resize: this.resizeRoom, remove: this.removeRoom, rotate:this.rotateRooms}
     this.a.dismissPopover(ev);
   }
   remRoom(){
     this.removeRoom =true;
-    let ev ={ resize: this.resizeRoom, remove: this.removeRoom }
+    let ev ={ resize: this.resizeRoom, remove: this.removeRoom , rotate:this.rotateRooms}
+    this.a.dismissPopover(ev);
+  }
+  rotateRoom(){
+    this.rotateRooms =true;
+    let ev ={ resize: this.resizeRoom, remove: this.removeRoom , rotate:this.rotateRooms}
     this.a.dismissPopover(ev);
   }
 }
