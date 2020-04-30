@@ -114,8 +114,8 @@
         padding: 2%;
       }
 
-      .wall {
-      }
+      // .wall {
+      // }
 
       .outer-polygon{
         fill: #000;
@@ -461,9 +461,9 @@
   transform: scale(0.5,0.5);
 }
 
-.rotate-off {
+// .rotate-off {
 
-}
+// }
 
 .rotate-on
 {
@@ -520,4 +520,9 @@
 @-webkit-keyframes popin {
   from{-webkit-transform:scale(1)}
   to{-webkit-transform:scale(0)}
+}
+.modal-wrapper{
+  --width: 90%;
+  --height: 95%;
+  --overflow: scroll;
 }

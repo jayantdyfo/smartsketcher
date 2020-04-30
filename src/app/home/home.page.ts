@@ -2,10 +2,10 @@ import { Component, Input } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { ViewLayoutComponent } from '../view-layout/view-layout.component';
 import * as d3 from 'd3';
-import { PopoverController } from '@ionic/angular';
+import { PopoverController, ModalController } from '@ionic/angular';
 import { drag } from 'd3';
 import { DriverProvider } from 'protractor/built/driverProviders';
-
+import { ɵsetRootDomAdapter } from '@angular/platform-browser';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -16,7 +16,7 @@ import { DriverProvider } from 'protractor/built/driverProviders';
 export class HomePage {
 
   constructor(
-    private user: UserService, private popoverController: PopoverController,
+    private user: UserService, private popoverController: PopoverController,private modalController: ModalController
   ) {}
   
   viewDetails = ViewLayoutComponent;
@@ -24,6 +24,8 @@ export class HomePage {
   x; //..x,y for rect......
   y;
   i=0;
+  polyAng=0;
+  roomId;
   image;
   x1;
   x2:number; 
@@ -32,6 +34,11 @@ export class HomePage {
   svg;
   propbox = false;
   properties=['Room', 'Device', 'Decorations'];
+  R_type: RoomData
+  roomtypes = [
+    'bedroom' , 'livingroom' , 'bathroom' , 'balcony' , 'kitchen' , 'outside' , 'stairs'
+    ]
+    room_type:any = this.roomtypes[0]
   devices=[
     {img:'assets/img/3d-wall-lamp.png'},
     {img:'assets/img/3pin-switch-down.png'},
@@ -58,16 +65,20 @@ export class HomePage {
     {img:'assets/img/water-pump-on.png'},
     {img:'assets/img/water-purifier-on.png'},
   ];
+  // "television" | "table" | "bed" | "sofa_1seat" | "sofa_2seat" | "dining_set"
   decorations=[
-    {img:'assets/img/bed_7.png'},
-    {img:'assets/img/bed_single.png'},
-    {img:'assets/img/sofa-1seat.png'},
-    {img:'assets/img/sofa-2seat.png'},
-    {img:'assets/img/table.png'},
-    {img:'assets/img/television.png'},
-    {img:'assets/img/dining-set.png'},
-    {img:'assets/img/cooler.png'},
-  ];
+    {img:'assets/img/bed_7.png', name:'bed'},
+    {img:'assets/img/bed_single.png', name:'bed'},
+    {img:'assets/img/sofa-1seat.png', name:'sofa_1seat'},
+    {img:'assets/img/sofa-2seat.png', name:'sofa_2seat'},
+    {img:'assets/img/table.png', name:'table'},
+    {img:'assets/img/television.png', name:'television'},
+    {img:'assets/img/dining-set.png', name:'dining_set'},
+    // {img:'assets/img/cooler.png', type:'bed'},
+    // {img:'assets/img/bed_7.png'},
+    // {img:'assets/img/bed_7.png'},
+    // {img:'assets/img/bed_7.png'},
+    ];
   floor=[
     {img:'assets/img/floor.png', id:1},
     {img:'assets/img/marble.jpg', id:2},
@@ -90,14 +101,14 @@ export class HomePage {
   ];
   props=this.properties[0]
   data;  
- index
+ index=0;
   ngOnInit() {
     // this.drag()
     // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
     // this.showarray = this.user.rapidPageValue;
     var width = 1050;
     var height = 680;
-    this.index=0;
+    //this.index=0;
     this.svg = d3.select("#layout")
     .append("svg")
    .attr("width", width)
@@ -110,16 +121,29 @@ export class HomePage {
   //this.svg=document.querySelector('svg');
   
   }
-
-  selectProps(e){
+  // ngOnInit() {
+  //   // this.drag()
+  //   // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
+  //   // this.showarray = this.user.rapidPageValue;
+  //   // var width = 1050;
+  //   // var height = 650;
+  //   // this.svg = d3.select("#layout")
+  //   // .append("svg")
+  //   // .attr("width", width)
+  //   // .attr("height", height)
+  //   // .style('border',"1px solid black").
+  //   // style('margin','-7%');
+  //   this.svg=d3.select('svg');
+  //   }
+    selectProps(e){
     //console.log(e)
-  }
-  roomNo=0;
+    }
+  roomNO=0;
   selectedElement;
   offset
   toolname='none';
    select(ev, tool){
-    document.getElementById('layout').style.cursor = "crosshair";
+    //document.getElementById('layout').style.cursor = "crosshair";
     window['d3'] = d3;
     var self=this;
     d3.select('#tempImg').remove();
@@ -131,7 +155,7 @@ export class HomePage {
           self=this;
             this.getPointerOnSVG();
             house.on('click', (e)=>{ 
-              this.createRoom()
+              this.createRoom(this)
               house.style('cursor','crosshair');
               self.toolname='none';
             })
@@ -194,6 +218,9 @@ export class HomePage {
    let x=coor[0];
    let y=coor[1];
    //console.log(t)
+   let id=this.index++;
+   //console.log(this.index++)
+   //console.log(id)
     var poly=[{"x":x, "y":y},
     {"x":x,"y":y+150},
     {"x":x+150,"y":y+150},
@@ -209,12 +236,13 @@ let polygonL=   d3.selectAll("svg").selectAll('polygon')
             return [(d.x),(d.y)].join(",");
         }
         ).join(" ");
-    }).attr('id','r-'+this.index+1+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',3);
+    }).attr('id','r-'+id+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class',"0 room");
  var movePoly = d3.drag()
                         .on("start", function () {
                           d3.select(this).attr('stroke','red');
                           d3.select(this).attr('cursor','grab');
                           // d3.event.target.attr('stroke','red');
+                          //console.log(d3.select(this))
                            //alert(d3.event.currentTarget);
                          })
                         .on("drag", function (d, i) {
@@ -235,8 +263,9 @@ let polygonL=   d3.selectAll("svg").selectAll('polygon')
  //var rotate=d3.event(this).attr('transform','rotate(90deg)')
 d3.selectAll("polygon").call(movePoly)
 d3.selectAll('polygon').on('contextmenu', function(d,i){
+  that.user.roomId=d3.event.target.id+"L"
   d3.event.preventDefault();
-  console.log(''+d+'--' + i);
+ // console.log(that.user.roomId+"L");
   that.presentPopover(d)
 })
  }
@@ -280,6 +309,7 @@ d3.selectAll('polygon').on('contextmenu', function(d,i){
    let that=this;
   let x=coor[0];
   let y=coor[1];
+  let id=this.index++;
    var poly=[{'x':x,'y':y},
               {'x':x,'y':y+150}, 
               {'x':x+200,'y':y+150},
@@ -296,7 +326,7 @@ d3.selectAll('polygon').on('contextmenu', function(d,i){
         return d.map(function(d) {
             return [(d.x),(d.y)].join(",");
         }).join(" ");
-    }).attr('id','r-'+this.index+1+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',3);
+    }).attr('id','r-'+id+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class',"0 room");
     var movePoly = d3.drag()
                         .on("start", function () {
                           d3.select(this).attr('stroke','red');
@@ -323,11 +353,18 @@ d3.selectAll('polygon').on('contextmenu', function(d,i){
                         });
 
 d3.selectAll("polygon").call(movePoly);
+d3.selectAll('polygon').on('contextmenu', function(d,i){
+  that.user.roomId=d3.event.target.id+"U"
+  d3.event.preventDefault();
+  console.log(that.user.roomId+"U");
+  that.presentPopover(d)
+})
  }
 tshape(coor){
   let that=this;
   let x=coor[0];
    let y=coor[1];
+   let id=this.index++;
   var poly=[{'x':x,'y':y},
   {'x':x,'y':y+40}, 
   {'x':x+60,'y':y+40},
@@ -344,7 +381,8 @@ tshape(coor){
         return d.map(function(d) {
             return [(d.x),(d.y)].join(",");
         }).join(" ");
-    }).attr('id','r-'+this.index+1+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',3);
+    }).attr('id','r-'+id+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class',"0 room");
+    //.attr('class',"room");
 
     // //alert('TTTTTTTTTTtt')
     // console.log(d3.selectAll('polygon'))
@@ -355,6 +393,7 @@ tshape(coor){
     }
     var movePoly = d3.drag()
                         .on("start", function () {
+                          console.log(d3.select(this))
                           d3.select(this).attr('stroke','red');
                           d3.select(this).attr('cursor','grab');
                           // d3.event.target.attr('stroke','red');
@@ -370,16 +409,24 @@ tshape(coor){
 
                             that.x += d3.event.dx;
                             that.y += d3.event.dy;
+                           
                             d3.select(this).attr("transform", "translate(" + that.x + "," + that.y + ")");
 
                         })
                         .on("end", function () {
+                          
                           d3.select(this).attr("stroke", "black");
                           d3.select(this).attr('cursor','auto');
                           //d3.event.target.style('stroke','black');
                         });
 
 d3.selectAll("polygon").call(movePoly);
+d3.selectAll('polygon').on('contextmenu', function(d,i){
+  that.user.roomId=d3.event.target.id+"T"
+  d3.event.preventDefault();
+  console.log(that.user.roomId+"T");
+  that.presentPopover(d)
+})
     // .data(myData)
     // .text(function (d, i) {
     //      return d;
@@ -417,22 +464,32 @@ drawPolygon(){
   alert("dyhjk")
 
 }
- drag1(ev,path) {
+ drag1(ev,path,el) {
    var self=this;
  let element=ev.currentTarget;
  this.image=path;
  element.classList.add("mystyle");
-  let allRect = d3.selectAll('rect').on('click',function(){
-  // self.drop(x,y);
-  console.log(d3.event)
-  d3.select(this).attr('stroke','red');
-  var x1=d3.select(this).attr('x');
-  var y1=d3.select(this).attr('y')
-  var coor=d3.mouse(d3.event.currentTarget)
-   var y=d3.event.offsetY-7; 
-  // alert(x+'     '+y);
-   self.drop(coor)
+  let allRect = d3.selectAll('.room');
+  allRect.on('drop',function(){
+    d3.select(this).attr('fill','red');
+    console.log(d3.select(this))
+    // let x=d3.event.x;
+    // let y=d3.event.y;
+    let target=d3.select(this)
+   // self.drop(target,x,y);
+    let newClass = d3.select(this).attr('id')+el;
+ // var x1=d3.select(this).attr('x');
+ var coor=d3.mouse(d3.event.currentTarget)
+ self.drop(coor, newClass,path.name)
   })
+  // 
+  // var x1=d3.select(this).attr('x');
+  // var y1=d3.select(this).attr('y')
+  // var coor=d3.mouse(d3.event.currentTarget)
+  //  var y=d3.event.offsetY-7; 
+  // // alert(x+'     '+y);
+  // 
+  // })
   
 //})
 }
@@ -442,24 +499,33 @@ rotateRoom(){
 // rotateRoom(){
 //   alert("jhgurherk")
 // }
-drop(dropPoints) {
+drop(dropPoints, newClass, name) {
 let self=this;
+console.log("hfbklkll;;l")
+
 let x=dropPoints[0];
 let y=dropPoints[1]
 this.i=this.i+1
-d3.selectAll('svg') .append('image')
-       .attr("xlink:href",this.image)
+d3.selectAll('svg').on('mousedown',function(){
+  var coor=d3.mouse(d3.event.currentTarget);
+  let x=coor[0];
+let y=coor[1];
+  d3.selectAll('svg').append('image')
+       .attr("xlink:href",self.image)
       .attr("x", x)
       .attr("y", y)
-      .attr('id',"img"+this.i)
+      .attr('id',"img"+self.i)
+      .attr('alt', name)
        .attr("width", "6%")
        .attr("height", "6%").classed('dragImg',true)
+})
      d3.selectAll('.dragImg').on('click',this.delete);
      }
-     delete(){
-       var del=d3.event.target.id
-       alert(del);
-       d3.select("#"+del).remove();
+
+ delete(){
+   var del=d3.event.target.id
+   alert(del);
+  d3.select("#"+del).remove();
      }
     // Drag(){
     //   d3.drag()
@@ -495,7 +561,7 @@ dragNResize(){
 getPointerOnSVG(){
   let self = this;
   $("svg").mousedown(function(e) {
-    console.log(e)
+    //console.log(e)
       var offset = $(this).offset();
       
     self.x = (e.pageX - offset.left);
@@ -511,24 +577,419 @@ async presentPopover(ev: any) {
   });
   return await popover.present();
 }
-async dismissPopover(ev) {    
-   this.popoverController.dismiss().then(() => { });
+async dismissPopover(ev) {  
+  let that = this;  
+   this.popoverController.dismiss().then(() => {
+    if(ev.remove){
+      d3.select('#resDoor').remove();
+      d3.select('#resizeW').remove();
+      d3.select('#resizeH').remove();
+      d3.select('#'+that.user.sel_Element[0].sel_id).remove()
+      } else if(ev.resize == true && that.user.sel_Element[0].sel_el == 'door'){
+      // d3.select('#'+that.user.sel_Element[0].sel_id).on('drag', null);
+      that.editDoor(that.user.sel_Element[0].sel_id)
+      } else if(that.user.sel_Element[0].sel_el == 'door' && ev.rotate == true){
+      that.rotateDoor(that.user.sel_Element[0].sel_id)
+      } else if(ev.move == true && that.user.sel_Element[0].sel_el == 'door'){
+      that.move(that.user.sel_Element[0].sel_id)
+      }
+    });
+
+   if(ev.rotate==true)
+   { 
+    var Id=this.user.roomId;
+    var roomId=Id.substring(0,Id.length-1)
+     //this.polyAng=this.polyAng+10;
+    console.log(roomId)
+    console.log(Id.includes('L'))
+    console.log(Id.includes('U'))
+    console.log(Id.includes('T'))
+    let angle=d3.selectAll("#"+roomId).attr('class');
+    console.log(angle)
+    let points=d3.selectAll("#"+roomId).attr('points').substring(0,30)
+    let commaIndex= points.indexOf(',')
+    let pointx=points.substring(0,commaIndex);
+    let pointy=points.substring(commaIndex+1,points.length)
+  //   let str=angle.substring(7,angle.length)
+  //   let index=str.indexOf(')');
+  //  let polyAng=str.substring(0,index);
+   let setAngle=parseInt(angle)
+   if(Id.includes('L')==true)
+   {
+    
+    if(setAngle==0)
+    {
+      let x=parseInt(pointx);
+      let y=parseInt(pointy)
+       var poly=[{'x':x,'y':y},
+                  {'x':x,'y':y+30}, 
+                  {'x':x-120,'y':y+30},
+                  {'x':x-120,'y':y+150},
+                  {'x':x-150,'y':y+150},
+                  {'x':x-150,'y':y},
+                 ]
+       d3.selectAll('#'+roomId).remove();          
+      d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
+        .data([poly])
+      .enter().append("polygon")
+        .attr("points",function(d) { 
+            return d.map(function(d) {
+                return [(d.x),(d.y)].join(",");
+            }).join(" ");
+        }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','90 room');
+        let that=this;
+        d3.selectAll('polygon').on('contextmenu', function(d,i){
+          that.user.roomId=d3.event.target.id+'L'
+          d3.event.preventDefault();
+          console.log(that.user.roomId+'L');
+          that.presentPopover(d)
+        })
+    }
+    if(setAngle==90)
+    {
+      let x=parseInt(pointx);
+      let y=parseInt(pointy)
+       var poly=[{'x':x,'y':y},
+                  {'x':x+150,'y':y}, 
+                  {'x':x+150,'y':y+150},
+                  {'x':x+120,'y':y+150},
+                  {'x':x+120,'y':y+30},
+                  {'x':x,'y':y+30},
+                 ]
+       d3.selectAll('#'+roomId).remove();          
+      d3.selectAll("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
+        .data([poly])
+      .enter().append("polygon")
+        .attr("points",function(d) { 
+            return d.map(function(d) {
+                return [(d.x),(d.y)].join(",");
+            }).join(" ");
+        }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','180 room');
+        let that=this;
+        d3.selectAll('polygon').on('contextmenu', function(d,i){
+          that.user.roomId=d3.event.target.id+'L'
+          d3.event.preventDefault();
+          console.log(that.user.roomId+'L');
+          that.presentPopover(d)
+        })
+    }
+    if(setAngle==180)
+    {
+      let x=parseInt(pointx);
+      let y=parseInt(pointy)
+       var poly=[{'x':x,'y':y},
+                  {'x':x,'y':y+30}, 
+                  {'x':x+150,'y':y+30},
+                  {'x':x+150,'y':y-120},
+                  {'x':x+120,'y':y-120},
+                  {'x':x+120,'y':y},
+                 ]
+       d3.selectAll('#'+roomId).remove();          
+      d3.selectAll("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
+        .data([poly])
+      .enter().append("polygon")
+        .attr("points",function(d) { 
+            return d.map(function(d) {
+                return [(d.x),(d.y)].join(",");
+            }).join(" ");
+        }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','270 room');
+        let that=this;
+        d3.selectAll('polygon').on('contextmenu', function(d,i){
+          that.user.roomId=d3.event.target.id+'L'
+          d3.event.preventDefault();
+          console.log(that.user.roomId+'L');
+          that.presentPopover(d)
+        })
+    }
+    if(setAngle==270)
+    {
+      let x=parseInt(pointx);
+      let y=parseInt(pointy)
+      var poly=[{"x":x, "y":y},
+      {"x":x,"y":y+150},
+      {"x":x+150,"y":y+150},
+      {"x":x+150,"y":y+120},
+      {"x":x+30,"y":y+120}, 
+      {"x":x+30,"y":y}];   
+       d3.selectAll('#'+roomId).remove();          
+      d3.selectAll("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
+        .data([poly])
+      .enter().append("polygon")
+        .attr("points",function(d) { 
+            return d.map(function(d) {
+                return [(d.x),(d.y)].join(",");
+            }).join(" ");
+        }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','0 room');
+        let that=this;
+        d3.selectAll('polygon').on('contextmenu', function(d,i){
+          that.user.roomId=d3.event.target.id+'L'
+          d3.event.preventDefault();
+          console.log(that.user.roomId+'L');
+          that.presentPopover(d)
+        })
+      }
+    }
+  if(Id.includes('U')==true){
+  if(setAngle==0){
+  let x=parseInt(pointx);
+      let y=parseInt(pointy)
+    var poly=[{'x':x,'y':y},
+    {'x':x,'y':y+200}, 
+    {'x':x+150,'y':y+200},
+    {'x':x+150,'y':y+160},
+    {'x':x+40,'y':y+160},
+    {'x':x+40,'y':y+40},
+    {'x':x+150,'y':y+40},
+    {'x':x+150,'y':y}
+   ]
+   d3.selectAll('#'+roomId).remove();
+d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
+.data([poly])
+.enter().append("polygon")
+.attr("points",function(d) { 
+return d.map(function(d) {
+  return [(d.x),(d.y)].join(",");
+}).join(" ");
+}).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','90 room');
+let that=this;
+d3.selectAll('polygon').on('contextmenu', function(d,i){
+  that.user.roomId=d3.event.target.id+"U"
+  d3.event.preventDefault();
+  console.log(that.user.roomId+'U');
+  that.presentPopover(d)
+})
+}
+if(setAngle==90){
+  let x=parseInt(pointx);
+      let y=parseInt(pointy)
+    var poly=[{'x':x,'y':y},
+    {'x':x,'y':y+150}, 
+    {'x':x+40,'y':y+150},
+    {'x':x+40,'y':y+40},
+    {'x':x+160,'y':y+40},
+    {'x':x+160,'y':y+150},
+    {'x':x+200,'y':y+150},
+    {'x':x+200,'y':y}
+   ]
+   d3.selectAll('#'+roomId).remove();
+d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
+.data([poly])
+.enter().append("polygon")
+.attr("points",function(d) { 
+return d.map(function(d) {
+  return [(d.x),(d.y)].join(",");
+}).join(" ");
+}).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','180 room');
+let that=this;
+d3.selectAll('polygon').on('contextmenu', function(d,i){
+  that.user.roomId=d3.event.target.id+"U"
+  d3.event.preventDefault();
+  console.log(that.user.roomId+'U');
+  that.presentPopover(d)
+})
+}
+if(setAngle==180){
+  let x=parseInt(pointx);
+      let y=parseInt(pointy)
+    var poly=[{'x':x,'y':y},
+    {'x':x,'y':y+40}, 
+    {'x':x+110,'y':y+40},
+    {'x':x+110,'y':y+160},
+    {'x':x,'y':y+160},
+    {'x':x,'y':y+200},
+    {'x':x+150,'y':y+200},
+    {'x':x+150,'y':y}
+   ]
+   d3.selectAll('#'+roomId).remove();
+d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
+.data([poly])
+.enter().append("polygon")
+.attr("points",function(d) { 
+return d.map(function(d) {
+  return [(d.x),(d.y)].join(",");
+}).join(" ");
+}).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','270 room');
+let that=this;
+d3.selectAll('polygon').on('contextmenu', function(d,i){
+  that.user.roomId=d3.event.target.id+"U"
+  d3.event.preventDefault();
+  console.log(that.user.roomId+'U');
+  that.presentPopover(d)
+})
+}
+if(setAngle==270){
+  let x=parseInt(pointx);
+      let y=parseInt(pointy)
+      var poly=[{'x':x,'y':y},
+      {'x':x,'y':y+150}, 
+      {'x':x+200,'y':y+150},
+      {'x':x+200,'y':y},
+      {'x':x+160,'y':y},
+      {'x':x+160,'y':y+120},
+      {'x':x+40,'y':y+120},
+      {'x':x+40,'y':y}
+      ]
+   d3.selectAll('#'+roomId).remove();
+d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
+.data([poly])
+.enter().append("polygon")
+.attr("points",function(d) { 
+return d.map(function(d) {
+  return [(d.x),(d.y)].join(",");
+}).join(" ");
+}).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','0 room');
+let that=this;
+d3.selectAll('polygon').on('contextmenu', function(d,i){
+  that.user.roomId=d3.event.target.id+"U"
+  d3.event.preventDefault();
+  console.log(that.user.roomId+'U');
+  that.presentPopover(d)
+})
+}
+}
+if(Id.includes('T')==true)
+{
+if(setAngle==0){
+let x=parseInt(pointx);
+let y=parseInt(pointy)
+var poly=[{'x':x,'y':y},
+  {'x':x,'y':y+40}, 
+  {'x':x+160,'y':y+40},
+  {'x':x+160,'y':y+100},
+  {'x':x+200,'y':y+100},
+  {'x':x+200,'y':y-40},
+  {'x':x+160,'y':y-40},
+  {'x':x+160,'y':y}
+ ]
+ d3.selectAll('#'+roomId).remove();
+  d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
+    .data([poly])
+  .enter().append("polygon")
+    .attr("points",function(d) { 
+        return d.map(function(d) {
+            return [(d.x),(d.y)].join(",");
+        }).join(" ");
+    }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','90 room');
+    let that=this;
+d3.selectAll('polygon').on('contextmenu', function(d,i){
+  that.user.roomId=d3.event.target.id+"T"
+  d3.event.preventDefault();
+  console.log(that.user.roomId+'T');
+  that.presentPopover(d)
+})
+}
+if(setAngle==90){
+  let x=parseInt(pointx);
+  let y=parseInt(pointy)
+
+
+  var poly=[{'x':x,'y':y},
+    {'x':x,'y':y+40}, 
+    {'x':x+160,'y':y+40},
+    {'x':x+160,'y':y},
+    {'x':x+100,'y':y},
+    {'x':x+100,'y':y-160},
+    {'x':x+60,'y':y-160},
+    {'x':x+60,'y':y}
+   ]
+   d3.selectAll('#'+roomId).remove();
+    d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
+      .data([poly])
+    .enter().append("polygon")
+      .attr("points",function(d) { 
+          return d.map(function(d) {
+              return [(d.x),(d.y)].join(",");
+          }).join(" ");
+      }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','180 room');
+      let that=this;
+  d3.selectAll('polygon').on('contextmenu', function(d,i){
+    that.user.roomId=d3.event.target.id+"T"
+    d3.event.preventDefault();
+    console.log(that.user.roomId+'T');
+    that.presentPopover(d)
+  })
+}
+if(setAngle==180){
+  let x=parseInt(pointx);
+  let y=parseInt(pointy)
+  var poly=[{'x':x,'y':y},
+    {'x':x+40,'y':y}, 
+    {'x':x+40,'y':y+60},
+    {'x':x+200,'y':y+60},
+    {'x':x+200,'y':y+100},
+    {'x':x+40,'y':y+100},
+    {'x':x+40,'y':y+160},
+    {'x':x,'y':y+160}
+   ]
+   d3.selectAll('#'+roomId).remove();
+    d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
+      .data([poly])
+    .enter().append("polygon")
+      .attr("points",function(d) { 
+          return d.map(function(d) {
+              return [(d.x),(d.y)].join(",");
+          }).join(" ");
+      }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','270 room');
+      let that=this;
+  d3.selectAll('polygon').on('contextmenu', function(d,i){
+    that.user.roomId=d3.event.target.id+"T"
+    d3.event.preventDefault();
+    console.log(that.user.roomId+'T');
+    that.presentPopover(d)
+  })
+}
+if(setAngle==270){
+  let x=parseInt(pointx);
+  let y=parseInt(pointy)
+  var poly=[{'x':x,'y':y},
+  {'x':x,'y':y+40}, 
+  {'x':x+60,'y':y+40},
+  {'x':x+60,'y':y+200},
+  {'x':x+100,'y':y+200},
+  {'x':x+100,'y':y+40},
+  {'x':x+160,'y':y+40},
+  {'x':x+160,'y':y}
+ ]
+   d3.selectAll('#'+roomId).remove();
+    d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
+      .data([poly])
+    .enter().append("polygon")
+      .attr("points",function(d) { 
+          return d.map(function(d) {
+              return [(d.x),(d.y)].join(",");
+          }).join(" ");
+      }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','0 room');
+      let that=this;
+  d3.selectAll('polygon').on('contextmenu', function(d,i){
+    that.user.roomId=d3.event.target.id+"T"
+    d3.event.preventDefault();
+    console.log(that.user.roomId+'T')
+    that.presentPopover(d)
+  })
+}
+}
+   }
+
 }
 // ...........menu end......................
 
-createRoom(){
+createRoom(ev){
   let that = this;
- const selector = d3.selectAll("svg");
-  selector.on('click', null)
-  selector.append("rect").
-  attr('x', that.x).
-  attr('y', that.y).
-  attr('width','50').
-  attr('height','50').
-  attr('stroke','rgb(79, 39, 39)').
-  attr('stroke-width','4').
-  attr('fill','transparent').
-  attr('class','room').style('z-index','0')
+ let mouse = d3.mouse(d3.event.currentTarget)
+ that.roomNO +=1 
+ let r_id = that.roomNO;
+ const selector = d3.select("#house");
+ selector.on('click', null)
+ selector.append("rect").
+ attr('x', mouse[0]).
+ attr('y', mouse[1]).
+ attr('width','10').
+ attr('height','10').
+ attr('stroke','rgb(79, 39, 39)').
+ attr('stroke-width','1').
+ attr('fill','transparent').
+ attr('id','r-'+r_id).
+ attr('class','room')
   //console.log("sfcydsjk")
 //  ...to move element.....................
  let allRect = d3.selectAll('rect');
@@ -567,8 +1028,10 @@ function started() {
 // ....right click ........
 allRect.on('contextmenu', function(d,i){
   d3.event.preventDefault();
+  that.user.sel_Element.length=0;
+  that.user.sel_Element.push({sel_id : d3.select(this).attr('id'), sel_el: 'room'})
   console.log(''+d+'--' + i);
-  that.presentPopover(d)
+  that.presentPopover(d);
 })
 // right click end................
 
@@ -588,13 +1051,13 @@ function toResize(){
     // ...........
 
     // .... To Resize HEIGHT................
-    d3.selectAll('svg').append('rect')
+    d3.select('svg').append('rect')
     .attr('x',curEl.attr('x'))
     .attr('y',parseFloat(curEl.attr('y'))+parseFloat(curEl.attr('height')))
     .attr('stroke','red')
-    .attr('stroke-width','3')
+    .attr('stroke-width','0.5')
     .attr('width',curEl.attr('width'))
-    .attr('height','3')
+    .attr('height','0.5')
     .attr('fill','none')
     .attr('id','resizeH')
     .style('z-index','2').style('cursor','ns-resize')
@@ -624,9 +1087,9 @@ function toResize(){
     .attr('y',curEl.attr('y'))
     .attr('x',parseFloat(curEl.attr('x'))+parseFloat(curEl.attr('width')))
     .attr('stroke','red')
-    .attr('stroke-width','3')
+    .attr('stroke-width','1')
     .attr('height',curEl.attr('height'))
-    .attr('width','2')
+    .attr('width','0.5')
     .attr('fill','none')
     .attr('id','resizeW')
     .style('z-index','2').style('cursor','ew-resize')
@@ -656,75 +1119,333 @@ function toResize(){
 
 // .... To set floor...........................................
 drag(e, fl) {
-  // console.log(fl_Img.sl)
   // d3.event.preventDefault()
   let floor = d3.select(e.target).style('border','2px solid blue')
-    floor.on('mouseleave', ()=>{floor.raise().style('border','none')})
-  // function setFloor() {
-    // d3.select(this).attr('pointer-events', 'none');
-    floor.on("mousedown", pick)
-    function pick(d) {
-     
-      d3.select('#tempImg').remove();
-      d3.select('svg').style('cursor','crosshair').append('image')
-                       .attr('href',fl.img)
-                       .attr('height',60)
-                       .attr('width',60)
-                       .attr('x',d3.event.x)
-                       .attr('y',d3.event.y)
-                       .attr('id','tempImg')
-      d3.select('body').on('mousemove',selectEL)
-      function selectEL(){
-        //alert("hgcskjcjsk")
-        d3.select('#tempImg').raise().attr('x',d3.event.x-30)
-                                      .raise().attr('y',d3.event.y-45)
-            d3.selectAll('.room').on('mouseover',highlight)
-          function highlight(){
-              let el=d3.select(this).raise().attr('stroke','blue')
-                  el.on('click',dropImg)
-                  el.on('mouseleave',sel_rem)
-          }
-          function sel_rem(){
-            d3.select(this).raise().attr('stroke','rgb(79, 39, 39)')
-          }
-        }
+  floor.on('mouseleave', ()=>{floor.raise().style('border','none')})
+  // d3.select(this).attr('pointer-events', 'none');
+  floor.on("mousedown", pick)
+  function pick(d) {
+  d3.select('#tempImg').remove();
+  d3.select('svg').style('cursor','crosshair').append('image')
+  .attr('href',fl.img)
+  .attr('height',10)
+  .attr('width',10)
+  .attr('x',d3.mouse(d3.event.currentTarget)[0])
+  .attr('y',d3.mouse(d3.event.currentTarget)[1])
+  .attr('id','tempImg')
+  d3.select('svg').on('mousemove',selectEL)
+  function selectEL(){
+  d3.select('#tempImg').raise().attr('x',d3.mouse(d3.event.currentTarget)[0]+1)
+  .raise().attr('y',d3.mouse(d3.event.currentTarget)[1]+1)
+  d3.selectAll('.room').on('mouseover',highlight)
+  function highlight(){
+  let el=d3.select(this).raise().attr('stroke','blue')
+  el.on('click',dropImg)
+  el.on('mouseleave',sel_rem)
+  }
+  function sel_rem(){
+  d3.select(this).raise().attr('stroke','rgb(79, 39, 39)')
+  }
+  }
+ 
+  function dropImg (){ 
+  d3.select(this).raise().attr('stroke','rgb(79, 39, 39)')
+  let floorid = d3.select('#fl'+fl.id)
+  if(floorid.node()){
+  console.log('id exist'+floorid.node())
+  d3.select(this).raise().attr('fill','url(#fl'+fl.id+')')
+  } else{
+  d3.select('defs').append('pattern')
+  .attr('x',0)
+  .attr('y',0)
+  .attr('height',10)
+  .attr('width',10)
+  .attr('id','fl'+fl.id)
+  .attr('patternUnits',"userSpaceOnUse")
+  .append('image')
+  .attr('xlink:href',fl.img)
+  .attr('height',10)
+  .attr('width',10)
+  .attr('x',0)
+  .attr('y',0)
+  d3.select(this).raise().attr('fill','url(#fl'+fl.id+')')
+  }
+  // .............REMOVE EVENTS AFTER SETTING FLOOR.................
+ 
+  d3.selectAll('.room').on('click', null)
+  d3.select(this).on('mouseleave',null)
+  d3.select('#tempImg').remove();
+  d3.select('svg').style('cursor','default')
+  d3.select('svg').on('mousemove',null)
+  d3.selectAll('.room').on('mouseover',null)
+ 
+  }
+  }
+  
+ }
+ doorNO = 0;
+ sel_door(type){
+ let that = this;
+ d3.select('#temp_door').remove();
+ // that.doorNO += 1;
+ let door;
+ if(type == 'slider'){
+ door = d3.select('#house').append('rect')
+ .attr('height',0.5)
+ .attr('width',8)
+ .attr('stroke','yellow')
+ .attr('stroke-width',0.5)
+ .attr('x',0)
+ .attr('y',0)
+ .attr('class','door')
+ .attr('id','temp_door');
+ doorWithMouse()
+} else
+if(type =='door') {
 
-        function dropImg (){ 
-          console.log("dsuhjjmk")
-          d3.select(this).raise().attr('stroke','rgb(79, 39, 39)')
-          let floorid = d3.select('#fl'+fl.id)
-          if(floorid.node()){
-            console.log('id exist'+floorid.node())
-            d3.select(this).raise().attr('fill','url(#fl'+fl.id+')')
-          } else{
-            d3.select('defs').append('pattern')
-            .attr('x',0)
-            .attr('y',0)
-            .attr('height',40)
-            .attr('width',40)
-            .attr('id','fl'+fl.id)
-            .attr('patternUnits',"userSpaceOnUse")
-            .append('image')
-            .attr('xlink:href',fl.img)
-            .attr('height',40)
-            .attr('width',40)
-            .attr('x',0)
-            .attr('y',0)
-            d3.select(this).raise().attr('fill','url(#fl'+fl.id+')')
-          }
-          // .............REMOVE EVENTS AFTER SETTING FLOOR.................
-          d3.select(this).on('click', null)
-          d3.select(this).on('mouseleave',null)
-          d3.select('#tempImg').remove();
-          d3.select('svg').style('cursor','default')
-          d3.select('body').on('mousemove',null)
-          d3.selectAll('.room').on('mouseover',null)
+}
+function doorWithMouse(){
+d3.select('#house').on('mousemove',()=>{
+door.raise().attr('x',d3.mouse(d3.event.currentTarget)[0]+2)
+.raise().attr('y',d3.mouse(d3.event.currentTarget)[1]+2)
+})
 
-        }
+}
+d3.selectAll('.room').on('mouseover',highlite)
+ function highlite(){
+ d3.select(this).raise().attr('stroke','blue')
+ d3.select(this).on('click',()=>{that.putDoor(this, door)})
+ 
+ d3.select(this).on('mouseleave',()=>{d3.select(this).raise().attr('stroke','rgb(79, 39, 39)')})
+ }
+ }
+ putDoor(ev, door){
+ let that = this;
+ that.doorNO += 1;
+ let mouse = d3.mouse(ev)
+ d3.select(ev).raise().attr('stroke','rgb(79, 39, 39)')
+ .on('click', null)
+ d3.selectAll('.room').on('mouseover',null)
+ .on('mouseleave',null)
+ d3.select('#house').on('mousemove',null)
+ door.raise().attr('id','door'+that.doorNO).raise().attr('x',mouse[0])
+ .attr('y',mouse[1]+0.3)
+ 
+ d3.selectAll('.door').raise().attr('stroke','yellow')
+ .on('contextmenu', function(){
+ that.rightClickOnDoor(this)
+ })
+ }
+ rightClickOnDoor(ev){
+ let that=this;
+ d3.event.preventDefault();
+ that.user.sel_Element.length=0;
+ that.user.sel_Element.push({sel_id : d3.select(ev).attr('id'), sel_el: 'door'})
+ that.presentPopover('door');
+ }
+
+ editDoor(el_id){
+ let that = this;
+ let el = d3.select('#'+el_id).style('cursor','default')
+ .call(d3.drag().on('start',null).on('drag',null).on('end',null))
+ let h = parseFloat(el.attr('height'))
+ let w = parseFloat(el.attr('width'))
+ let x = parseFloat(el.attr('x'))
+ let y = parseFloat(el.attr('y'))
+ // d3.select('svg').append('image').attr('x',el.attr('x')).attr('y',parseFloat(el.attr('y'))-10)
+ // .attr('xlink:href','assets/icon/icon-minus.png')
+ // .attr('height',30)
+ // .attr('width',30)
+ if(h < w){
+ d3.select('svg').append('rect')
+ .attr('id','resDoor')
+ .attr('x',x+w+0.5)
+ .attr('y',y)
+ .attr('height',0.5)
+ .attr('width',0.5)
+ .style('cursor','ew-resize')
+ .attr('stroke','red')
+ .attr('stroke-width','0.5')
+ .call(d3.drag().on('start', function(){that.resize(el,this, 'w')}))
+ } else {
+ d3.select('svg').append('rect')
+ .attr('id','resDoor')
+ .attr('x',x)
+ .attr('y',y+h+0.5)
+ .attr('height',0.5)
+ .attr('width',0.5)
+ .style('cursor','ns-resize')
+ .attr('stroke','red')
+ .attr('stroke-width','0.5')
+ .call(d3.drag().on('start', function(){that.resize(el, this, 'h')}))
+ }
+ el.on('click', ()=> {d3.select('#resDoor').remove()})
+ }
+
+
+ rotateDoor(el_id){
+ d3.select('#resDoor').remove();
+ let el = d3.select('#'+el_id)
+ let h = el.attr('height')
+ let w = el.attr('width')
+ el.raise().attr('height',w)
+ el.raise().attr('width',h)
+ }
+ resize(currentEL,barEl,changeProp){
+  let that = this;
+  let dragBar = d3.select(barEl);
+  let dragBarOrigin = {x: parseFloat(dragBar.attr('x')), y: parseFloat(dragBar.attr('y'))}
+  let prePoint = {x:d3.event.x, y: d3.event.y}
+  let curElProp ={w:parseFloat(currentEL.attr('width')), h:parseFloat(currentEL.attr('height'))}
+  // let clickDiff = {x:(d3.event.x-curElOrigin.x), y:(d3.event.y-curElOrigin.y)}
+  d3.event.on("drag", dragged).on("end", ended)
+  function dragged(d) {
+  let diff = {x: prePoint.x - d3.event.x, y: prePoint.y - d3.event.y}
+  if(changeProp=='w'){
+  currentEL.raise().attr("width", curElProp.w-diff.x);
+  dragBar.raise().attr('x',dragBarOrigin.x-diff.x)
+  } else if(changeProp=='h'){
+  currentEL.raise().attr("height", curElProp.h-diff.y);
+  dragBar.raise().attr('y',dragBarOrigin.y-diff.y)
+  }
+  
+  }
+  function ended(d) {
+  currentEL.classed("dragging", false);
+  }
+  }
+  move(el_id){
+    let that = this;
+    d3.select('#resDoor').remove();
+    let el = d3.select('#'+el_id).call(d3.drag().on('start',started)) 
+    el.style('cursor','move') 
+    function started() {
+    var currentEL = el
+    let curElOrigin ={x:parseFloat(currentEL.attr('x')), y:parseFloat(currentEL.attr('y'))}
+    let clickDiff = {x:(d3.event.x-curElOrigin.x), y:(d3.event.y-curElOrigin.y)}
+    d3.event.on("drag", dragged).on("end", ended)
+    function dragged(d) {
+    currentEL.raise().attr("x", that.x = d3.event.x-clickDiff.x).attr("y", that.y = d3.event.y-clickDiff.y);
     }
+    function ended(d) {
+    currentEL.classed("dragging", false);
+    }
+    };
+    }
+    
+ layout =false;
+ 
+ saveView(){
+ let that = this;
+ // that.layout = true;
+ // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
+ let rooms: RoomData[] = [];
+ let doors = [];
+ let entrance = [];
+ d3.selectAll('.room').each( function () {
+ let el = d3.select(this)
+ let id = el.attr('id')
+ const fl = (el.attr('fill')=='url(#fl1)') ? true : false;
+ let decorations = []
+ d3.selectAll('.'+id+'deco').each(function(){
+ let curDeco = d3.select(this)
+ decorations.push(
+ {
+ type: curDeco.attr('alt'),
+ x: parseFloat(curDeco.attr('x')),
+ y: parseFloat(curDeco.attr('y')),
+ rotate: 0,
+ scale: 0.7
+ }
+ )
+ 
+ })
+ rooms.push(
+  {
+  type: that.room_type,
+  label: {
+  name: that.room_type
+  },
+  coordinates: {
+  type: 'rect',
+  origin: {
+  x: parseFloat(el.attr('x')),
+  y: parseFloat(el.attr('y'))
+  },
+  w: parseFloat(el.attr('width')),
+  h: parseFloat(el.attr('height'))
+  },
+  roomId: parseInt(id.slice(2)),
+  active: true,
+  floor: fl ? 'wooden' : 'marble',
+  devices: [
+  // {
+  // type: 'chandelier',
+  // x: 50,
+  // y: 50,
+  // rotate: 0,
+  // deviceId: 1,
+  // scale: 0.5
+  // } 
+  ],
+  decorations: [...decorations]
+ 
+ }
+
+ )
+ 
+
+ });
+ d3.selectAll('.door').each(function(){
+ let doorEL =d3.select(this)
+ let x= parseFloat(doorEL.attr('x'))
+ let y= parseFloat(doorEL.attr('y'))
+ let h= parseFloat(doorEL.attr('height'))
+ let w= parseFloat(doorEL.attr('width'))
+ if(x){
+ doors.push(
+ {
+ origin: {
+ x: x,
+ y: y
+ },
+ length: h > w ? h : w,
+ 
+ orientation: h > w ? 90 : 0,
+ });
+ }
+ })
+ entrance.push({
+  x: 7,
+  y: 5,
+  length: 13,
+  orientation:90
+  })
+  that.user.arraydata = {
+  rooms : rooms,
+  doors : doors,
+  entrance : entrance
+  }
+  console.log(that.user.arraydata)
+  // that.user.onHomeSelect();
+  that.presentModal()
+  }
+  async presentModal() {
+    const modal = await this.modalController.create({
+    component: ViewLayoutComponent,
+    componentProps: {
+    // 'firstName': 'Douglas',
+    },
+    backdropDismiss: true 
+    });
+    return await modal.present();
+    }
+   }
+ 
+   
   // }
 
-  let svgEL = d3.selectAll('rect')
+ // let svgEL = d3.selectAll('rect')
   // svgEL.on('mousemove',selectEL)
   // function selectEL(){
   //   let el=d3.select(this).raise().attr('stroke','blue')
@@ -733,10 +1454,9 @@ drag(e, fl) {
   // function sel_rem(){
   //   d3.select(this).raise().attr('stroke','rgb(79, 39, 39)')
   // }
-}
 
 
-}
+
 
 
 
@@ -749,6 +1469,7 @@ drag(e, fl) {
   <ion-item button>Move</ion-item>
   <ion-item button (click)='remRoom()'>Remove</ion-item>
   <ion-item button (click)='rotateRoom()'>Rotate</ion-item>
+  <ion-item button *ngIf='user.sel_Element[0].sel_el == "door"' (click)='rotate()'>Rotate</ion-item>
 </ion-list>`,
 })
 export class ContextComponent {
@@ -756,6 +1477,9 @@ export class ContextComponent {
   resizeRoom = false;
   removeRoom = false;
   rotateRooms=false;
+  rotatedoor = false;
+ move_el = false;
+  //console.log(this)
   activateResize(){
     this.resizeRoom =true;
     let ev ={ resize: this.resizeRoom, remove: this.removeRoom, rotate:this.rotateRooms}
@@ -767,8 +1491,20 @@ export class ContextComponent {
     this.a.dismissPopover(ev);
   }
   rotateRoom(){
+    //console.log(this);
     this.rotateRooms =true;
+   // that.polyAng;
     let ev ={ resize: this.resizeRoom, remove: this.removeRoom , rotate:this.rotateRooms}
     this.a.dismissPopover(ev);
   }
+  rotate(){
+    this.rotatedoor = true;
+    let ev = { resize: this.resizeRoom, remove: this.removeRoom, rotate: this.rotatedoor }
+    this.a.dismissPopover(ev);
+    }
+    move(){
+    this.move_el = true;
+    let ev = { move: this.move_el, resize: this.resizeRoom, remove: this.removeRoom, rotate: this.rotatedoor }
+    this.a.dismissPopover(ev);
+    }
 }
