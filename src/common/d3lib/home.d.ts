@@ -1,6 +1,7 @@
 interface RoomData{
   coordinates: RoomRect|RoomPoly,
   type: 'bedroom' | 'livingroom' | 'bathroom' | 'balcony' | 'kitchen' | 'outside' | 'stairs',
+  // type: string,
   roomId: number,
   active: boolean,
   label?: RoomLabel
@@ -71,6 +72,8 @@ interface DevicesOverview{
 
 interface Decoration{
   type: 'bed' | 'sofa_1seat' | 'sofa_2seat' | 'table' | 'dining_set' | 'television',
+  x2D: number,
+  y2D: number,
   x: number,
   y: number,
   scale?: number,

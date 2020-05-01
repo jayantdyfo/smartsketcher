@@ -33,13 +33,13 @@
     }
 
     .room {
-      fill:white;
+      // fill:white;
       stroke-width:1.5%;
       stroke:#644a4a
     }
-
+   
     .bedroom {
-      fill: rgb(203, 211, 238);
+      // fill: rgb(203, 211, 238);
 
       //background:
       //  linear-gradient(135deg, #708090 22px, #d9ecff 22px, #d9ecff 24px, transparent 24px, transparent 67px, #d9ecff 67px, #d9ecff 69px, transparent 69px),
@@ -48,25 +48,25 @@
       //background-size: 500px 500px
     }
 
-    .livingroom {
-      fill: rgb(172, 174, 241)
-    }
+    // .livingroom {
+    //   fill: rgb(172, 174, 241)
+    // }
 
-    .bathroom {
-      fill: #cd853f26
-    }
+    // .bathroom {
+    //   fill: #cd853f26
+    // }
 
-    .balcony {
-      fill: #cccccc
-    }
+    // .balcony {
+    //   fill: #cccccc
+    // }
 
-    .kitchen {
-      fill: #d6c1c1
-    }
+    // .kitchen {
+    //   fill: #d6c1c1
+    // }
 
-    .outside {
-      fill : white
-    }
+    // .outside {
+    //   fill : white
+    // }
 
     .door {
       stroke:white;
@@ -92,6 +92,38 @@
       stroke-width:0.02;
       fill:#3df332
     }
+
+
+
+// 2D-decoration css......................
+    .bed{
+      fill: url(#bed);
+      width: 12.5%;
+      height: 12.5%;
+    }
+    .sofa-1seat{
+      fill: url(#sofa-1seat);
+      width: 12.5%;
+      height: 7.5%;
+    }
+    .sofa-2seat{
+      width: 10%;
+      height: 9%;
+      fill: url(#sofa-2seat);
+    }
+    .table{
+      width: 30%;
+      height: 12%;
+      fill: url(#table);
+    }
+    .dining-set{
+      width: 40%;
+      height: 20%;
+      fill: url(#dining-set);
+    }
+// .............................................
+
+
   }
 
   #rooms-layout {
@@ -520,4 +552,9 @@
 @-webkit-keyframes popin {
   from{-webkit-transform:scale(1)}
   to{-webkit-transform:scale(0)}
+}
+.modal-wrapper{
+  --width: 25%;
+  --height: 80%;
+  --overflow: scroll;
 }

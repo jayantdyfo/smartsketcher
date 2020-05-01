@@ -11,9 +11,26 @@ import * as d3 from 'd3';
 export class UserService implements  AfterContentChecked {
 
   @Input() arraydata;
+  // @Input()rooms: RoomData[] = [];
+  // @Input()doors = [];
+  // @Input()entrance ={
+    // x: 7,
+    // y: 5,
+    // length: 13,
+    // orientation:90
+  // }
+
   constructor(private variableService: VariableService,
     // public prettifier: NgxPrettifyService
-    ) { }
+    ) { 
+
+      // this.arraydata={
+      //   rooms: this.rooms,
+      //   doors: this.doors,
+      //   entrance: this.entrance
+      // }
+
+    }
 
   webServerHost = this.variableService.serverHost + ":" + this.variableService.serverPort;
  public sel_Element=[];
@@ -29,6 +46,7 @@ export class UserService implements  AfterContentChecked {
   g_id;
   sel_group = [];
   sel3D = [];
+  // deco2Ddata={decorations:[]};
   ngAfterContentChecked() {
   // this.cd.detectChanges();
   }
@@ -80,14 +98,15 @@ export class UserService implements  AfterContentChecked {
   onHomeSelect() {
     console.log("on Home Select:");
     // console.log("haaaaaaaaaaaaaaaaaaaaaa"+JSON.stringify(this.arraydata))
+    this.variableService.activeRoomId = null
     this.variableService.showHouse2dIcon = true;
     // console.log("house2ddddddddddddd" + this.variableService.showHouse2dIcon);
     this.variableService.exitApp = true;
     let env = this;
     env.variableService.activeLayoutName = env.variableService.houseName;
     this.getRoomsAndDeviceInfo();
-    document.querySelector("#home-layout").innerHTML="";
-    document.querySelector("#rooms-layout").innerHTML="";
+    // document.querySelector("#home-layout").innerHTML="";
+    // document.querySelector("#rooms-layout").innerHTML="";
     //Plot Rooms
     this.plotRooms(env);
   // alert(JSON.stringify(env))

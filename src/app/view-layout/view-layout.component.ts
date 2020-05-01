@@ -30,7 +30,7 @@ export class ViewLayoutComponent implements OnInit, OnChanges {
     //this.variableService.exitApp = true;
     //this.serverUrl = this.variableService.serverHost + ":" + this.variableService.serverPort + "/";
     
-    
+    this.user.onHomeSelect();
   }
   ngOnChanges(){
     // this.onHomeSelect()

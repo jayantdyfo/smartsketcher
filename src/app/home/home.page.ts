@@ -2,8 +2,11 @@ import { Component, Input } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { ViewLayoutComponent } from '../view-layout/view-layout.component';
 import * as d3 from 'd3';
-import { PopoverController } from '@ionic/angular';
+import { PopoverController, ModalController } from '@ionic/angular';
 import { drag } from 'd3';
+import { ɵsetRootDomAdapter } from '@angular/platform-browser';
+
+// export default data;
 
 @Component({
   selector: 'app-home',
@@ -15,13 +18,14 @@ import { drag } from 'd3';
 export class HomePage {
 
   constructor(
-    private user: UserService, private popoverController: PopoverController,
+    private user: UserService, private popoverController: PopoverController, private modalController: ModalController,
   ) {}
   
   viewDetails = ViewLayoutComponent;
   iconname='square-outline'
   x; //..x,y for rect......
   y;
+  i=0;
   image;
   x1:number;
   x2:number;
@@ -30,6 +34,11 @@ export class HomePage {
   svg;
   propbox = false;
   properties=['Room', 'Device', 'Decorations'];
+  R_type: RoomData
+  roomtypes = [
+    'bedroom' , 'livingroom' , 'bathroom' , 'balcony' , 'kitchen' , 'outside' , 'stairs'
+  ]
+  room_type:any = this.roomtypes[0]
   devices=[
     {img:'assets/img/3d-wall-lamp.png'},
     {img:'assets/img/3pin-switch-down.png'},
@@ -56,15 +65,16 @@ export class HomePage {
     {img:'assets/img/water-pump-on.png'},
     {img:'assets/img/water-purifier-on.png'},
   ];
+  // "television" | "table" | "bed" | "sofa_1seat" | "sofa_2seat" | "dining_set"
   decorations=[
-    {img:'assets/img/bed_7.png'},
-    {img:'assets/img/bed_single.png'},
-    {img:'assets/img/sofa-1seat.png'},
-    {img:'assets/img/sofa-2seat.png'},
-    {img:'assets/img/table.png'},
-    {img:'assets/img/television.png'},
-    {img:'assets/img/dining-set.png'},
-    {img:'assets/img/cooler.png'},
+    {img:'assets/img/bed_7.png', name:'bed'},
+    {img:'assets/img/bed_single.png', name:'bed'},
+    {img:'assets/img/sofa-1seat.png', name:'sofa_1seat'},
+    {img:'assets/img/sofa-2seat.png', name:'sofa_2seat'},
+    {img:'assets/img/table.png', name:'table'},
+    {img:'assets/img/television.png', name:'television'},
+    {img:'assets/img/dining-set.png', name:'dining_set'},
+    // {img:'assets/img/cooler.png', type:'bed'},
     // {img:'assets/img/bed_7.png'},
     // {img:'assets/img/bed_7.png'},
     // {img:'assets/img/bed_7.png'},
@@ -91,7 +101,7 @@ export class HomePage {
   ];
   props=this.properties[0]
   data;
-  // export default data;  
+  
 
   ngOnInit() {
     // this.drag()
@@ -105,7 +115,7 @@ export class HomePage {
   //   .attr("height", height)
   //   .style('border',"1px solid black").
   //   style('margin','-7%');
-  //this.svg=document.querySelector('svg');
+  this.svg=d3.select('svg');
   }
   selectProps(e){
     //console.log(e)
@@ -126,8 +136,8 @@ export class HomePage {
         if(self.toolname=='rectangle'){
           self=this;
             self.getPointerOnSVG();
-            house.on('click', (e)=>{ 
-              self.createRoom()
+            house.on('click', ()=>{ 
+              self.createRoom(this)
               house.style('cursor','default');
               self.toolname='none';
             })  
@@ -162,7 +172,7 @@ export class HomePage {
        .attr("y1", self.y1)
        .attr("y2", self.y2)
        .attr("stroke", "black")
-       .attr('stroke-width','3')
+       .attr('stroke-width','1')
      }
  }
 
@@ -195,7 +205,7 @@ async presentPopover(ev: any) {
   const popover = await this.popoverController.create({
     component: ContextComponent,
     event: ev,
-    translucent: true
+    translucent: true,
   });
   return await popover.present();
 }
@@ -220,25 +230,26 @@ async dismissPopover(ev) {
 // ...........menu end......................
 roomNO = 0;
 
-createRoom(){
+createRoom(ev){
   let that = this;
+  let mouse = d3.mouse(d3.event.currentTarget)
   that.roomNO +=1 
   let r_id = that.roomNO;
  const selector = d3.select("#house");
   selector.on('click', null)
   selector.append("rect").
-  attr('x', that.x).
-  attr('y', that.y).
-  attr('width','50').
-  attr('height','50').
+  attr('x', mouse[0]).
+  attr('y', mouse[1]).
+  attr('width','20').
+  attr('height','20').
   attr('stroke','rgb(79, 39, 39)').
-  attr('stroke-width','5').
+  attr('stroke-width','1').
   attr('fill','transparent').
   attr('id','r-'+r_id).
-  attr('class','room').style('z-index','0')
+  attr('class','room')
   
 //  ...to move element.....................
- let allRect = d3.selectAll('rect');
+ let allRect = d3.selectAll('.room');
 // allRect.style('cursor', 'move');
 // allRect.call(d3.drag().on("start", started))
 function started() {
@@ -299,9 +310,9 @@ function toResize(){
     .attr('x',curEl.attr('x'))
     .attr('y',parseFloat(curEl.attr('y'))+parseFloat(curEl.attr('height')))
     .attr('stroke','red')
-    .attr('stroke-width','3')
+    .attr('stroke-width','0.5')
     .attr('width',curEl.attr('width'))
-    .attr('height','3')
+    .attr('height','0.5')
     .attr('fill','none')
     .attr('id','resizeH')
     .style('z-index','2').style('cursor','ns-resize')
@@ -331,9 +342,9 @@ function toResize(){
     .attr('y',curEl.attr('y'))
     .attr('x',parseFloat(curEl.attr('x'))+parseFloat(curEl.attr('width')))
     .attr('stroke','red')
-    .attr('stroke-width','3')
+    .attr('stroke-width','1')
     .attr('height',curEl.attr('height'))
-    .attr('width','2')
+    .attr('width','0.5')
     .attr('fill','none')
     .attr('id','resizeW')
     .style('z-index','2').style('cursor','ew-resize')
@@ -379,15 +390,15 @@ drag(e, fl) {
       d3.select('#tempImg').remove();
       d3.select('svg').style('cursor','crosshair').append('image')
                        .attr('href',fl.img)
-                       .attr('height',60)
-                       .attr('width',60)
-                       .attr('x',d3.event.x)
-                       .attr('y',d3.event.y)
+                       .attr('height',10)
+                       .attr('width',10)
+                       .attr('x',d3.mouse(d3.event.currentTarget)[0])
+                       .attr('y',d3.mouse(d3.event.currentTarget)[1])
                        .attr('id','tempImg')
-      d3.select('body').on('mousemove',selectEL)
+      d3.select('svg').on('mousemove',selectEL)
       function selectEL(){
-        d3.select('#tempImg').raise().attr('x',d3.event.x-30)
-                                      .raise().attr('y',d3.event.y-45)
+        d3.select('#tempImg').raise().attr('x',d3.mouse(d3.event.currentTarget)[0]+1)
+                             .raise().attr('y',d3.mouse(d3.event.currentTarget)[1]+1)
             d3.selectAll('.room').on('mouseover',highlight)
           function highlight(){
               let el=d3.select(this).raise().attr('stroke','blue')
@@ -409,24 +420,25 @@ drag(e, fl) {
             d3.select('defs').append('pattern')
             .attr('x',0)
             .attr('y',0)
-            .attr('height',40)
-            .attr('width',40)
+            .attr('height',10)
+            .attr('width',10)
             .attr('id','fl'+fl.id)
             .attr('patternUnits',"userSpaceOnUse")
             .append('image')
             .attr('xlink:href',fl.img)
-            .attr('height',40)
-            .attr('width',40)
+            .attr('height',10)
+            .attr('width',10)
             .attr('x',0)
             .attr('y',0)
             d3.select(this).raise().attr('fill','url(#fl'+fl.id+')')
           }
           // .............REMOVE EVENTS AFTER SETTING FLOOR.................
-          d3.select(this).on('click', null)
+
+          d3.selectAll('.room').on('click', null)
           d3.select(this).on('mouseleave',null)
           d3.select('#tempImg').remove();
           d3.select('svg').style('cursor','default')
-          d3.select('body').on('mousemove',null)
+          d3.select('svg').on('mousemove',null)
           d3.selectAll('.room').on('mouseover',null)
 
         }
@@ -434,30 +446,30 @@ drag(e, fl) {
   
 }
 
-drop(ev) {
- // ev.preventDefault();
-  console.log(ev.target)
-  let self=this;
-    //var data = localStorage.getData("data");
-    var data=document.querySelectorAll('.mystyle');
-    let target=document.querySelector('svg');
-    $(function() {
-      $("svg").mousedown(function(e) {
+// drop(ev) {
+//  // ev.preventDefault();
+//   console.log(ev.target)
+//   let self=this;
+//     //var data = localStorage.getData("data");
+//     var data=document.querySelectorAll('.mystyle');
+//     let target=document.querySelector('svg');
+//     $(function() {
+//       $("svg").mousedown(function(e) {
       
-        var offset = $(this).offset();
-      self.x = (e.pageX - offset.left);
-      self.y= (e.pageY - offset.top);
-      });
-      });
+//         var offset = $(this).offset();
+//       self.x = (e.pageX - offset.left);
+//       self.y= (e.pageY - offset.top);
+//       });
+//       });
 
-  this.svg.append('image')
-        .attr("href",this.image)
-        .attr("x", self.x)
-        .attr("y", self.y)
-        .attr("width", "6%")
-        .attr("height", "6%")
-        //  .attr('stroke-width','3')
-      }
+//   this.svg.append('image')
+//         .attr("href",this.image)
+//         .attr("x", self.x)
+//         .attr("y", self.y)
+//         .attr("width", "6%")
+//         .attr("height", "6%")
+//         //  .attr('stroke-width','1')
+//       }
 
       doorNO = 0;
       sel_door(type){
@@ -467,10 +479,10 @@ drop(ev) {
         let door;
         if(type == 'slider'){
          door = d3.select('#house').append('rect')
-          .attr('height',4)
-          .attr('width',50)
+          .attr('height',0.5)
+          .attr('width',8)
           .attr('stroke','yellow')
-          .attr('stroke-width',5)
+          .attr('stroke-width',0.5)
           .attr('x',0)
           .attr('y',0)
           .attr('class','door')
@@ -482,8 +494,8 @@ drop(ev) {
         }
       function doorWithMouse(){
         d3.select('#house').on('mousemove',()=>{
-          door.raise().attr('x',d3.event.x-30)
-          .raise().attr('y',d3.event.y-40)
+          door.raise().attr('x',d3.mouse(d3.event.currentTarget)[0]+2)
+              .raise().attr('y',d3.mouse(d3.event.currentTarget)[1]+2)
         })
         
       }
@@ -505,8 +517,10 @@ drop(ev) {
       .on('mouseleave',null)
       d3.select('#house').on('mousemove',null)
       door.raise().attr('id','door'+that.doorNO).raise().attr('x',mouse[0])
-      .attr('y',mouse[1])
-      d3.selectAll('.door').on('contextmenu', function(){
+                                                  .attr('y',mouse[1]+0.3)
+                                                
+      d3.selectAll('.door').raise().attr('stroke','yellow')
+      .on('contextmenu', function(){
                   that.rightClickOnDoor(this)
       })
     }
@@ -533,24 +547,24 @@ drop(ev) {
       if(h < w){
         d3.select('svg').append('rect')
                         .attr('id','resDoor')
-                        .attr('x',x+w+4)
+                        .attr('x',x+w+0.5)
                         .attr('y',y)
-                        .attr('height',4)
-                        .attr('width',4)
+                        .attr('height',0.5)
+                        .attr('width',0.5)
                         .style('cursor','ew-resize')
                         .attr('stroke','red')
-                        .attr('stroke-width','4')
+                        .attr('stroke-width','0.5')
                         .call(d3.drag().on('start', function(){that.resize(el,this, 'w')}))
       } else {
         d3.select('svg').append('rect')
                         .attr('id','resDoor')
                         .attr('x',x)
-                        .attr('y',y+h+4)
-                        .attr('height',4)
-                        .attr('width',4)
+                        .attr('y',y+h+0.5)
+                        .attr('height',0.5)
+                        .attr('width',0.5)
                         .style('cursor','ns-resize')
                         .attr('stroke','red')
-                        .attr('stroke-width','4')
+                        .attr('stroke-width','0.5')
                         .call(d3.drag().on('start', function(){that.resize(el, this, 'h')}))
       }
       el.on('click', ()=> {d3.select('#resDoor').remove()})
@@ -610,8 +624,186 @@ drop(ev) {
     }
 
 
+
+
+// this function is used to set deco.... and device...............
+    drag1(ev,path,el) {
+      var self=this;
+    let element=ev.currentTarget;
+    this.image=path.img;
+    element.classList.add("mystyle");
+     let allRect = d3.selectAll('.room').on('click',function(){
+     // self.drop(x,y);
+     console.log(d3.event)
+     let newClass = d3.select(this).attr('id')+el;
+    //  var x1=d3.select(this).attr('x');
+     var coor=d3.mouse(d3.event.currentTarget)
+      self.drop(coor, newClass,path.name)
+     })
+   }
+
+   drop(dropPoints, newClass, name) {
+   let self=this;
+   let x=dropPoints[0];
+   let y=dropPoints[1]
+   this.i=this.i+1
+   d3.selectAll('svg') .append('image')
+          .attr("xlink:href",this.image)
+         .attr("x", x-4)
+         .attr("y", y-1)
+         .attr('id',"img"+this.i)
+         .attr('alt', name)
+          .attr("width", "14%")
+          .attr("height", "14%").classed('dragImg',true).classed(newClass, true)
+
+          d3.selectAll('.room').on('click',null)
+        d3.selectAll('.dragImg').on('click',this.delete);
+        }
+delete(){
+   var del=d3.event.target.id
+    alert(del);
+    d3.select("#"+del).remove(); 
+ }
+
+
+
+
+
+
+
+    layout =false;
+    
     saveView(){
-      
+      let that = this;
+      // that.layout = true;
+      // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
+      let rooms: RoomData[] = [];
+      let doors = [];
+      let entrance = [];
+      d3.selectAll('.room').each( function () {
+        let el = d3.select(this)
+        let id = el.attr('id')
+        const fl = (el.attr('fill')=='url(#fl1)') ? true : false;
+        let rX = parseFloat(el.attr('x'))
+        let rY = parseFloat(el.attr('y'))
+        let rH = parseFloat(el.attr('height'))
+        let rW = parseFloat(el.attr('width'))
+        let decorations = []
+        d3.selectAll('.'+id+'deco').each(function(){
+          let curDeco = d3.select(this)
+          let decX = parseFloat(curDeco.attr('x'))
+          let decY = parseFloat(curDeco.attr('y'))
+          let dx = ((decX-rX+4) * 100 / rW)//-(parseFloat(el.attr('width'))*2/100))
+          let dy = ((decY-rY+1) * 100 / rH)//-(parseFloat(el.attr('height'))*2/100))
+          dx = 19+((75-19)*dx/100)
+          dy = 16+((76-16)*dy/100)+(dy*10/100)
+          alert(dx+'----'+dy)
+          // that.user.deco2Ddata.decorations.length=0;
+          // that.user.deco2Ddata.decorations.push(
+          //   {
+          //       type: curDeco.attr('alt'),
+          //       x: decX,
+          //       y: decY,
+          //       rotate: 0,
+          //       scale: 0.7
+          // })
+          // console.log(that.user.deco2Ddata.decorations)
+          decorations.push(
+              {
+                type: curDeco.attr('alt'),
+                x2D: decX, //...values for 2d deco...
+                y2D: decY, //...values for 2d deco...
+                x: dx,
+                y: dy,
+                rotate: 0,
+                scale: 0.7
+              }
+          )
+              
+        })
+
+          rooms.push(
+          {
+            type: that.room_type,
+            label: {
+              name: that.room_type
+            },
+            coordinates: {
+              type: 'rect',
+              origin: {
+                x: parseFloat(el.attr('x')),
+                y: parseFloat(el.attr('y'))
+              },
+              w: parseFloat(el.attr('width')),
+              h: parseFloat(el.attr('height'))
+            },
+            roomId: parseInt(id.slice(2)),
+            active: true,
+            floor: fl ? 'wooden' : 'marble',
+            devices: [
+            //   {
+            //   type: 'chandelier',
+            //   x: 50,
+            //   y: 50,
+            //   rotate: 0,
+            //   deviceId: 1,
+            //   scale: 0.5
+            // }    
+           ],
+           
+           decorations: [...decorations]
+           
+        }
+
+        )
+        
+
+      });
+      d3.selectAll('.door').each(function(){
+        let doorEL =d3.select(this)
+        let x= parseFloat(doorEL.attr('x'))
+        let y= parseFloat(doorEL.attr('y'))
+        let h= parseFloat(doorEL.attr('height'))
+        let w= parseFloat(doorEL.attr('width'))
+        if(x){
+          doors.push(
+            {
+              origin: {
+                x: x,
+                y: y
+              },
+              length: h > w ? h : w,
+              
+              orientation: h > w ? 90 : 0,
+            });
+        }
+      })
+  
+      entrance.push({
+        x: 7,
+        y: 5,
+        length: 13,
+        orientation:90
+      })
+      that.user.arraydata = {
+        rooms : rooms,
+        doors : doors,
+        entrance : entrance
+      }
+      console.log(that.user.arraydata)
+      // that.user.onHomeSelect();
+      that.presentModal()
+    }
+
+    async presentModal() {
+      const modal = await this.modalController.create({
+        component: ViewLayoutComponent,
+        componentProps: {
+          // 'firstName': 'Douglas',
+        },
+          backdropDismiss: true 
+      });
+      return await modal.present();
     }
 }
 
