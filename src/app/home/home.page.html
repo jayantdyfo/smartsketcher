@@ -10,7 +10,7 @@
 <ion-content [fullscreen]="true">
 <div style="width: 100%; height: 100%; display: flex;">
   <div id="container" style="padding:0% 0%">
-    <svg *ngIf='layout== false' id="house" height = '100%' width = '100%' xmlns="http://www.w3.org/2000/svg" style="border: 1px solid;" preserveAspectRatio="xMinYMin meet" version="1.1" viewBox='0 0 100 50'>
+    <svg *ngIf='layout== false' id="house" (dragover)="allowDrop($event)" height = '100%' width = '100%' xmlns="http://www.w3.org/2000/svg" style="border: 1px solid;" preserveAspectRatio="xMinYMin meet" version="1.1" viewBox='0 0 100 50'>
       <defs>
 
       </defs>
@@ -43,6 +43,24 @@
             <ion-select-option *ngFor="let type of roomtypes" [value]="type">{{type}}</ion-select-option>
           </ion-select>
         </ion-item>
+        <!-- <ion-item>
+          <ion-icon (click)='select($event, "polygon")' name="create"></ion-icon>
+          Draw Polygon with Line
+        </ion-item> -->
+        <ion-item>
+          <ion-img (click)='select($event, "L_shape")' style="width:40%" src="assets/img/L_shape.png"></ion-img>
+          L shape Room 
+        </ion-item>
+        <ion-item>
+          <ion-img (click)='select($event, "U_shape")' style="width:40%" src="assets/img/U_shape.png"></ion-img>
+          U shape Room
+        </ion-item>
+        <ion-item>
+          <ion-img (click)='select($event, "T_shape")' style="width:40%" src="assets/img/T_shape.png"></ion-img>
+          T shape Room
+        </ion-item>
+
+
         <ion-item>
           <ion-icon (click)='select($event, "polygon")' name="create"></ion-icon>
           Draw Polygon with Line
@@ -66,14 +84,16 @@
       </div>
       <div class="dev-tool" *ngIf='props=="Device"'>
         <ion-item *ngFor='let dev of devices'>
-         <img class="device" src="{{dev.img}}"  alt="" draggable="true" (dragstart)="drag($event,dev.img,'dev')">
+         <img class="device" src="{{dev.img}}"  alt="" draggable="true" (dragstart)="drag1($event,dev.img,dev.name,'dev')">
         </ion-item>
       </div>
       <div class="deco-tool" *ngIf='props=="Decorations"'>
         <ion-item *ngFor='let deco of decorations'>
-         <img class="deco" src="{{deco.img}}"  alt="{{deco.name}}" draggable="true" (dragstart)="drag1($event,deco,'deco')">
+         <img class="deco" src="{{deco.img}}"  alt="{{deco.name}}" draggable="true" (dragstart)="drag1($event,deco.img,deco.name,'deco')">
         </ion-item>
       </div>
   </div>
 </div>
 </ion-content>
+
+  

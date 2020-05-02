@@ -33,7 +33,7 @@ export class UserService implements  AfterContentChecked {
     }
 
   webServerHost = this.variableService.serverHost + ":" + this.variableService.serverPort;
- public sel_Element=[];
+ public sel_Element=[{sel_id : '0', sel_el: 'none'}];
  public res_room = false;
   // grouping variables
   groupingview = false;
@@ -47,6 +47,8 @@ export class UserService implements  AfterContentChecked {
   sel_group = [];
   sel3D = [];
   // deco2Ddata={decorations:[]};
+  roomId;
+  // sel_Element;
   ngAfterContentChecked() {
   // this.cd.detectChanges();
   }
