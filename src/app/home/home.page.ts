@@ -3,7 +3,7 @@ import { UserService } from '../services/user.service';
 import { ViewLayoutComponent } from '../view-layout/view-layout.component';
 import * as d3 from 'd3';
 import { PopoverController, ModalController } from '@ionic/angular';
-import { drag } from 'd3';
+import { drag, keys } from 'd3';
 import { DriverProvider } from 'protractor/built/driverProviders';
 import { ɵsetRootDomAdapter } from '@angular/platform-browser';
 @Component({
@@ -39,36 +39,38 @@ export class HomePage {
     'bedroom' , 'livingroom' , 'bathroom' , 'balcony' , 'kitchen' , 'outside' , 'stairs'
   ]
   room_type:any = this.roomtypes[0]
+  // socket' | 'tubelight' | 'fan' | 'wall_lamp' | 'bulb' | 'chandelier' | 'airconditioner' | 'geyser' | 'refrigerator'  | 'washingMachine' | 'computer'| 'television' | 'water_pump'
+
   devices=[
-    {img:'assets/img/3d-wall-lamp.png'},
-    {img:'assets/img/3pin-switch-down.png'},
-    {img:'assets/img/3pin-switch-left.png'},
-    {img:'assets/img/3pin-switch-right.png'},
-    {img:'assets/img/3pin-switch-up.png'},
-    {img:'assets/img/airconditioner.png'},
-    {img:'assets/img/bulb.png'},
-    {img:'assets/img/chandelier.png'},
-    {img:'assets/img/curtain-on.png'},
-    {img:'assets/img/fan-on.png'},
-    {img:'assets/img/geyser-on.png'},
-    {img:'assets/img/light-bulb-on.png'},
-    {img:'assets/img/lock.png'},
-    {img:'assets/img/microwave-oven.png'},
-    {img:'assets/img/refrigerator-on.png'},
-    {img:'assets/img/rotor-on.png'},
-    {img:'assets/img/security_cam.png'},
-    {img:'assets/img/socket-on.png'},
-    {img:'assets/img/television-on.png'},
-    {img:'assets/img/tubelight-on.png'},
-    {img:'assets/img/wall-lamp-on.png'},
-    {img:'assets/img/washing_machine-on.png'},
-    {img:'assets/img/water-pump-on.png'},
-    {img:'assets/img/water-purifier-on.png'},
+    {img:'assets/img/3d-wall-lamp.png', name:'wall_lamp'},
+    {img:'assets/img/3pin-switch-down.png', name:'socket'},
+    {img:'assets/img/3pin-switch-left.png', name:'socket'},
+    {img:'assets/img/3pin-switch-right.png', name:'socket'},
+    {img:'assets/img/3pin-switch-up.png', name:'socket'},
+    {img:'assets/img/airconditioner.png', name:'airconditioner'},
+    {img:'assets/img/bulb.png', name:'bulb'},
+    {img:'assets/img/chandelier.png', name:'chandelier'},
+    {img:'assets/img/curtain-on.png', name:'tubelight'},
+    {img:'assets/img/fan-on.png', name:'fan'},
+    {img:'assets/img/geyser-on.png', name:'geyser'},
+    {img:'assets/img/light-bulb-on.png', name:'bulb'},
+    {img:'assets/img/lock.png', name:'lock'},
+    {img:'assets/img/microwave-oven.png', name:'microwave'},
+    {img:'assets/img/refrigerator-on.png', name:'refrigerator'},
+    {img:'assets/img/rotor-on.png', name:'fan'},
+    {img:'assets/img/security_cam.png', name:'socket'},
+    {img:'assets/img/socket-on.png', name:'socket'},
+    {img:'assets/img/television-on.png', name:'television'},
+    {img:'assets/img/tubelight-on.png', name:'tubelight'},
+    {img:'assets/img/wall-lamp-on.png', name:'wall_lamp'},
+    {img:'assets/img/washing_machine-on.png', name:'washingMachine'},
+    {img:'assets/img/water-pump-on.png', name:'water_pump'},
+    {img:'assets/img/water-purifier-on.png', name:'socket'},
   ];
   // "television" | "table" | "bed" | "sofa_1seat" | "sofa_2seat" | "dining_set"
   decorations=[
     {img:'assets/img/bed_7.png', name:'bed'},
-    {img:'assets/img/bed_single.png', name:'bed'},
+    // {img:'assets/img/bed_single.png', name:'bed'},
     {img:'assets/img/sofa-1seat.png', name:'sofa_1seat'},
     {img:'assets/img/sofa-2seat.png', name:'sofa_2seat'},
     {img:'assets/img/table.png', name:'table'},
@@ -1318,6 +1320,29 @@ drag(e, fl) {
    }
 
 // this function is used to set deco.... and device...............
+imgCSS = {
+  sofa_1seat: {h:6, w:6},
+  sofa_2seat: {h:10,w:10},
+  dining_set: {h:13,w:13},
+  television: {h:10,w:10},
+  table: {h:10,w:10},
+  bed: {h:12,w:12},
+
+  socket: {h:5,w:5},
+  tubelight: {h:5,w:5},
+  fan: {h:5,w:5},
+  wall_lamp: {h:5,w:5},
+  bulb: {h:5,w:5},
+  chandelier: {h:5,w:5},
+  airconditioner: {h:10,w:10},
+  geyser: {h:5,w:5},
+  refrigerator: {h:8,w:8},
+  washingMachine: {h:8,w:8},
+  computer: {h:6,w:6},
+  // television: {h:10,w:10},
+  water_pump: {h:5,w:5}
+  }
+  
  drag1(ev,path,name,el) {
       var self=this;
     let element=ev.currentTarget;
@@ -1341,19 +1366,24 @@ drag(e, fl) {
     var coor=d3.mouse(d3.event.currentTarget);
     // d3.select(this).attr('fill','none');
     let x=coor[0];
-  let y=coor[1];
+    let y=coor[1];
+    let h = self.imgCSS[name].h
+    let w = self.imgCSS[name].w
+    // })
    d3.selectAll('svg') .append('image')
-          .attr("xlink:href",self.image)
+         .attr("xlink:href",self.image)
          .attr("x", x-4)
          .attr("y", y-1)
          .attr('id',"img"+self.i)
          .attr('alt', name)
-          .attr("width", "14%")
-          .attr("height", "14%")
-          .attr('class',Class+ ' dragImg')
+          .attr("width", w)
+          .attr("height", h)
+          .attr('class', Class+ ' dragImg ' )
+          // .classed(name, true)
    })
+          // document.querySelector..classList.add('sofa1seat')
           d3.selectAll('.room').on('click',null)
-        d3.selectAll('.dragImg').on('click',this.delete);
+          d3.selectAll('.dragImg').on('click',this.delete);
         }
 delete(){
    var del=d3.event.target.id
@@ -1384,6 +1414,26 @@ delete(){
         let rY = parseFloat(el.attr('y'))
         let rH = parseFloat(el.attr('height'))
         let rW = parseFloat(el.attr('width'))
+        
+        let devices = []
+        d3.selectAll('.'+id+'dev').each(function(){
+          let curDev = d3.select(this)
+          let devX = parseFloat(curDev.attr('x'))
+          let devY = parseFloat(curDev.attr('y'))
+          let dx = ((devX-rX+4) * 100 / rW)
+          let dy = ((devY-rY+1) * 100 / rH)
+            devices.push(
+              {
+                type: curDev.attr('alt'),
+                x: dx,
+                y: dy,
+                rotate: 0,
+                deviceId: 1,
+                scale: 0.5
+              }
+          )
+        })
+
         let decorations = []
         d3.selectAll('.'+id+'deco').each(function(){
           let curDeco = d3.select(this)
@@ -1391,19 +1441,10 @@ delete(){
           let decY = parseFloat(curDeco.attr('y'))
           let dx = ((decX-rX+4) * 100 / rW)//-(parseFloat(el.attr('width'))*2/100))
           let dy = ((decY-rY+1) * 100 / rH)//-(parseFloat(el.attr('height'))*2/100))
-          dx = 19+((75-19)*dx/100)
+          dx = 19+((75-19)*dx/100)+(dx*8/100)
           dy = 16+((76-16)*dy/100)+(dy*10/100)
-          alert(dx+'----'+dy)
-          // that.user.deco2Ddata.decorations.length=0;
-          // that.user.deco2Ddata.decorations.push(
-          //   {
-          //       type: curDeco.attr('alt'),
-          //       x: decX,
-          //       y: decY,
-          //       rotate: 0,
-          //       scale: 0.7
-          // })
-          // console.log(that.user.deco2Ddata.decorations)
+          // alert(dx+'----'+dy)
+      
           decorations.push(
               {
                 type: curDeco.attr('alt'),
@@ -1436,16 +1477,7 @@ delete(){
             roomId: parseInt(id.slice(2)),
             active: true,
             floor: fl ? 'wooden' : 'marble',
-            devices: [
-            //   {
-            //   type: 'chandelier',
-            //   x: 50,
-            //   y: 50,
-            //   rotate: 0,
-            //   deviceId: 1,
-            //   scale: 0.5
-            // }    
-           ],
+            devices: [...devices],
            
            decorations: [...decorations]
            
