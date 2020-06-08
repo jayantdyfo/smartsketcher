@@ -29,7 +29,8 @@ export class UserService implements  AfterContentChecked {
   sel_group = [];
   sel3D = [];
   roomId;
-  sel_Element;
+  //sel_Element;
+  public sel_Element=[{sel_id:'0',sel_el:'none'}]
   ngAfterContentChecked() {
   // this.cd.detectChanges();
   }

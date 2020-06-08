@@ -32,6 +32,7 @@ export class HomePage {
   y1;
   y2:number;
   svg;
+  newClass;
   propbox = false;
   properties=['Room', 'Device', 'Decorations'];
   R_type: RoomData
@@ -40,30 +41,30 @@ export class HomePage {
     ]
     room_type:any = this.roomtypes[0]
   devices=[
-    {img:'assets/img/3d-wall-lamp.png'},
-    {img:'assets/img/3pin-switch-down.png'},
-    {img:'assets/img/3pin-switch-left.png'},
-    {img:'assets/img/3pin-switch-right.png'},
-    {img:'assets/img/3pin-switch-up.png'},
-    {img:'assets/img/airconditioner.png'},
-    {img:'assets/img/bulb.png'},
-    {img:'assets/img/chandelier.png'},
-    {img:'assets/img/curtain-on.png'},
-    {img:'assets/img/fan-on.png'},
-    {img:'assets/img/geyser-on.png'},
-    {img:'assets/img/light-bulb-on.png'},
-    {img:'assets/img/lock.png'},
-    {img:'assets/img/microwave-oven.png'},
-    {img:'assets/img/refrigerator-on.png'},
-    {img:'assets/img/rotor-on.png'},
-    {img:'assets/img/security_cam.png'},
-    {img:'assets/img/socket-on.png'},
-    {img:'assets/img/television-on.png'},
-    {img:'assets/img/tubelight-on.png'},
-    {img:'assets/img/wall-lamp-on.png'},
-    {img:'assets/img/washing_machine-on.png'},
-    {img:'assets/img/water-pump-on.png'},
-    {img:'assets/img/water-purifier-on.png'},
+    {img:'assets/img/3d-wall-lamp.png',name:'lamp'},
+    {img:'assets/img/3pin-switch-down.png',name:'switch_down'},
+    {img:'assets/img/3pin-switch-left.png',name:'switch_left'},
+    {img:'assets/img/3pin-switch-right.png',name:'switch_right'},
+    {img:'assets/img/3pin-switch-up.png',name:'switch_up'},
+    {img:'assets/img/airconditioner.png',name:'ac'},
+    {img:'assets/img/bulb.png',name:'bulb'},
+    {img:'assets/img/chandelier.png',name:'chandelier'},
+    {img:'assets/img/curtain-on.png',name:'curtain_on'},
+    {img:'assets/img/fan-on.png',name:'fan_on'},
+    {img:'assets/img/geyser-on.png',name:'geyser_on'},
+    {img:'assets/img/light-bulb-on.png',name:'bulb_on'},
+    {img:'assets/img/lock.png',name:'lock'},
+    {img:'assets/img/microwave-oven.png',name:'microwave'},
+    {img:'assets/img/refrigerator-on.png',name:'refrigerator_on'},
+    {img:'assets/img/rotor-on.png',name:'rotor_on'},
+    {img:'assets/img/security_cam.png',name:'camera'},
+    {img:'assets/img/socket-on.png',name:'socket_on'},
+    {img:'assets/img/television-on.png',name:'tv_on'},
+    {img:'assets/img/tubelight-on.png',name:'tubelight_on'},
+    {img:'assets/img/wall-lamp-on.png',name:'wallLamp_on'},
+    {img:'assets/img/washing_machine-on.png',name:'washingMachine_on'},
+    {img:'assets/img/water-pump-on.png',name:'waterPump_on'},
+    {img:'assets/img/water-purifier-on.png',name:'waterPurifier_on'},
   ];
   // "television" | "table" | "bed" | "sofa_1seat" | "sofa_2seat" | "dining_set"
   decorations=[
@@ -102,39 +103,39 @@ export class HomePage {
   props=this.properties[0]
   data;  
  index=0;
-  ngOnInit() {
-    // this.drag()
-    // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
-    // this.showarray = this.user.rapidPageValue;
-    var width = 1050;
-    var height = 680;
-    //this.index=0;
-    this.svg = d3.select("#layout")
-    .append("svg")
-   .attr("width", width)
-    .attr("height", height)
-    .style('border',"1px solid black").
-    style('margin','-7%')
-    .append('defs');
-    //.append('polygon')
-    
-  //this.svg=document.querySelector('svg');
-  
-  }
   // ngOnInit() {
   //   // this.drag()
   //   // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
   //   // this.showarray = this.user.rapidPageValue;
-  //   // var width = 1050;
-  //   // var height = 650;
-  //   // this.svg = d3.select("#layout")
-  //   // .append("svg")
-  //   // .attr("width", width)
-  //   // .attr("height", height)
-  //   // .style('border',"1px solid black").
-  //   // style('margin','-7%');
-  //   this.svg=d3.select('svg');
-  //   }
+  //   var width = 1050;
+  //   var height = 680;
+  //   //this.index=0;
+  //   this.svg = d3.select("#layout")
+  //   .append("svg")
+  //  .attr("width", width)
+  //   .attr("height", height)
+  //   .style('border',"1px solid black").
+  //   style('margin','-7%')
+  //   .append('defs');
+  //   //.append('polygon')
+    
+  // //this.svg=document.querySelector('svg');
+  
+  // }
+  ngOnInit() {
+    // this.drag()
+    // this.user.arraydata = JSON.parse(this.user.rapidPageValue);
+    // this.showarray = this.user.rapidPageValue;
+    // var width = 1050;
+    // var height = 650;
+    // this.svg = d3.select("#layout")
+    // .append("svg")
+    // .attr("width", width)
+    // .attr("height", height)
+    // .style('border',"1px solid black").
+    // style('margin','-7%');
+    this.svg=d3.select('svg');
+    }
     selectProps(e){
     //console.log(e)
     }
@@ -148,7 +149,7 @@ export class HomePage {
     var self=this;
     d3.select('#tempImg').remove();
     self.toolname=tool;
-      let house = d3.selectAll("svg");
+      let house = d3.select("svg");
       //console.log(house)
       house.raise().style('cursor','cell');
         if(self.toolname=='rectangle'){
@@ -163,7 +164,7 @@ export class HomePage {
     if(self.toolname=='polygon'){
       var self=this;
       //console.log(d3.select('svg'));
-      d3.selectAll('svg').
+      d3.select('svg').
        on('mousedown', 
        //this.pointx1
        function(){
@@ -175,7 +176,7 @@ export class HomePage {
     if(self.toolname=='L_shape'){
       var self=this;
       //console.log(d3.select('svg'));
-      d3.selectAll('svg').
+      d3.select('svg').
        on('click', 
        function(){
          let points=d3.mouse(d3.event.currentTarget)
@@ -187,7 +188,7 @@ export class HomePage {
     if(self.toolname=='U_shape'){
       var self=this;
       //console.log(d3.select('svg'));
-      d3.selectAll('svg').
+      d3.select('svg').
        on('click', 
        //this.pointx1
        function(){
@@ -201,7 +202,7 @@ export class HomePage {
       var self=this;
      
       //console.log(d3.select('svg'));
-      d3.selectAll('svg').
+      d3.select('svg').
        on('click', 
        //this.pointx1
        function(){
@@ -222,13 +223,13 @@ export class HomePage {
    //console.log(this.index++)
    //console.log(id)
     var poly=[{"x":x, "y":y},
-    {"x":x,"y":y+150},
-    {"x":x+150,"y":y+150},
-    {"x":x+150,"y":y+120},
-    {"x":x+30,"y":y+120}, 
-    {"x":x+30,"y":y}];       
-let polygonL=   d3.selectAll("svg").selectAll('polygon') 
-    d3.selectAll("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
+    {"x":x,"y":y+15},
+    {"x":x+15,"y":y+15},
+    {"x":x+15,"y":y+12},
+    {"x":x+3,"y":y+12}, 
+    {"x":x+3,"y":y}];       
+let polygonL=   d3.select("svg").selectAll('polygon') 
+    d3.select("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
     .data([poly])
   .enter().append("polygon")
     .attr("points",function(d) { 
@@ -236,7 +237,7 @@ let polygonL=   d3.selectAll("svg").selectAll('polygon')
             return [(d.x),(d.y)].join(",");
         }
         ).join(" ");
-    }).attr('id','r-'+id+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class',"0 room");
+    }).attr('id','r-'+id+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class',"0 room");
  var movePoly = d3.drag()
                         .on("start", function () {
                           d3.select(this).attr('stroke','red');
@@ -311,22 +312,22 @@ d3.selectAll('polygon').on('contextmenu', function(d,i){
   let y=coor[1];
   let id=this.index++;
    var poly=[{'x':x,'y':y},
-              {'x':x,'y':y+150}, 
-              {'x':x+200,'y':y+150},
-              {'x':x+200,'y':y},
-              {'x':x+160,'y':y},
-              {'x':x+160,'y':y+120},
-              {'x':x+40,'y':y+120},
-              {'x':x+40,'y':y}
+              {'x':x,'y':y+15}, 
+              {'x':x+20,'y':y+15},
+              {'x':x+20,'y':y},
+              {'x':x+16,'y':y},
+              {'x':x+16,'y':y+12},
+              {'x':x+4,'y':y+12},
+              {'x':x+4,'y':y}
              ]
-  d3.selectAll("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
+  d3.select("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
     .data([poly])
   .enter().append("polygon")
     .attr("points",function(d) { 
         return d.map(function(d) {
             return [(d.x),(d.y)].join(",");
         }).join(" ");
-    }).attr('id','r-'+id+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class',"0 room");
+    }).attr('id','r-'+id+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class',"0 room");
     var movePoly = d3.drag()
                         .on("start", function () {
                           d3.select(this).attr('stroke','red');
@@ -366,22 +367,22 @@ tshape(coor){
    let y=coor[1];
    let id=this.index++;
   var poly=[{'x':x,'y':y},
-  {'x':x,'y':y+40}, 
-  {'x':x+60,'y':y+40},
-  {'x':x+60,'y':y+200},
-  {'x':x+100,'y':y+200},
-  {'x':x+100,'y':y+40},
-  {'x':x+160,'y':y+40},
-  {'x':x+160,'y':y}
+  {'x':x,'y':y+4}, 
+  {'x':x+6,'y':y+4},
+  {'x':x+6,'y':y+20},
+  {'x':x+10,'y':y+20},
+  {'x':x+10,'y':y+4},
+  {'x':x+16,'y':y+4},
+  {'x':x+16,'y':y}
  ]
-  d3.selectAll("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
+  d3.select("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
     .data([poly])
   .enter().append("polygon")
     .attr("points",function(d) { 
         return d.map(function(d) {
             return [(d.x),(d.y)].join(",");
         }).join(" ");
-    }).attr('id','r-'+id+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class',"0 room");
+    }).attr('id','r-'+id+'_1d').attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class',"0 room");
     //.attr('class',"room");
 
     // //alert('TTTTTTTTTTtt')
@@ -432,13 +433,11 @@ d3.selectAll('polygon').on('contextmenu', function(d,i){
     //      return d;
     // });
 }
-allowDrop(ev) {
-  ev.preventDefault();
-}
+
 
 pointx1(x,y){
   var self=this;
-   d3.selectAll('svg')
+   d3.select('svg')
   .on('mouseup',function(){
     var x1=d3.event.x-82;
      var y1=d3.event.y-66;
@@ -448,7 +447,7 @@ pointx1(x,y){
 
 draw(x,y,x1,y1){
 let self=this;
-d3.selectAll('svg'). append("line")
+d3.select('svg'). append("line")
 .attr("x1", x)
 .attr("x2", x1)
 .attr("y1", y)
@@ -464,63 +463,47 @@ drawPolygon(){
   alert("dyhjk")
 
 }
- drag1(ev,path,el) {
+allowDrop(ev) {
+  ev.preventDefault();
+}
+ drag1(ev,path,name,el) {
    var self=this;
  let element=ev.currentTarget;
  this.image=path;
  element.classList.add("mystyle");
   let allRect = d3.selectAll('.room');
-  allRect.on('drop',function(){
+  allRect.on('dragenter',function(){
     d3.select(this).attr('fill','red');
     console.log(d3.select(this))
-    // let x=d3.event.x;
-    // let y=d3.event.y;
     let target=d3.select(this)
-   // self.drop(target,x,y);
-    let newClass = d3.select(this).attr('id')+el;
- // var x1=d3.select(this).attr('x');
- var coor=d3.mouse(d3.event.currentTarget)
- self.drop(coor, newClass,path.name)
-  })
-  // 
-  // var x1=d3.select(this).attr('x');
-  // var y1=d3.select(this).attr('y')
-  // var coor=d3.mouse(d3.event.currentTarget)
-  //  var y=d3.event.offsetY-7; 
-  // // alert(x+'     '+y);
-  // 
-  // })
-  
-//})
+ let newClass = d3.select(this).attr('id')+el;
+ console.log(newClass)
+ self.drop(newClass,name)
+ })
 }
-rotateRoom(){
-  alert("jvhfjhj")
-}
-// rotateRoom(){
-//   alert("jhgurherk")
-// }
-drop(dropPoints, newClass, name) {
+drop(Class,name) {
 let self=this;
-console.log("hfbklkll;;l")
-
-let x=dropPoints[0];
-let y=dropPoints[1]
 this.i=this.i+1
-d3.selectAll('svg').on('mousedown',function(){
+d3.selectAll('.room').on('drop',function(){
   var coor=d3.mouse(d3.event.currentTarget);
-  let x=coor[0];
-let y=coor[1];
-  d3.selectAll('svg').append('image')
+  d3.select(this).attr('fill','none');
+//   let x=coor[0];
+// let y=coor[1];
+var x = d3.event.pageX - document.getElementById("house").getBoundingClientRect().x
+var y = d3.event.pageY - document.getElementById("house").getBoundingClientRect().y 
+alert(x+"   "+y)
+  d3.select('svg').append('image')
        .attr("xlink:href",self.image)
       .attr("x", x)
       .attr("y", y)
       .attr('id',"img"+self.i)
       .attr('alt', name)
        .attr("width", "6%")
-       .attr("height", "6%").classed('dragImg',true)
-})
-     d3.selectAll('.dragImg').on('click',this.delete);
-     }
+       .attr("height", "6%")
+       .attr('class',Class+'  dragImg')
+      })
+   d3.selectAll('.dragImg').on('click',this.delete);
+   }
 
  delete(){
    var del=d3.event.target.id
@@ -622,11 +605,11 @@ async dismissPopover(ev) {
       let x=parseInt(pointx);
       let y=parseInt(pointy)
        var poly=[{'x':x,'y':y},
-                  {'x':x,'y':y+30}, 
-                  {'x':x-120,'y':y+30},
-                  {'x':x-120,'y':y+150},
-                  {'x':x-150,'y':y+150},
-                  {'x':x-150,'y':y},
+                  {'x':x,'y':y+3}, 
+                  {'x':x-12,'y':y+3},
+                  {'x':x-12,'y':y+15},
+                  {'x':x-15,'y':y+15},
+                  {'x':x-15,'y':y},
                  ]
        d3.selectAll('#'+roomId).remove();          
       d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
@@ -636,7 +619,7 @@ async dismissPopover(ev) {
             return d.map(function(d) {
                 return [(d.x),(d.y)].join(",");
             }).join(" ");
-        }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','90 room');
+        }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class','90 room');
         let that=this;
         d3.selectAll('polygon').on('contextmenu', function(d,i){
           that.user.roomId=d3.event.target.id+'L'
@@ -650,11 +633,11 @@ async dismissPopover(ev) {
       let x=parseInt(pointx);
       let y=parseInt(pointy)
        var poly=[{'x':x,'y':y},
-                  {'x':x+150,'y':y}, 
-                  {'x':x+150,'y':y+150},
-                  {'x':x+120,'y':y+150},
-                  {'x':x+120,'y':y+30},
-                  {'x':x,'y':y+30},
+                  {'x':x+15,'y':y}, 
+                  {'x':x+15,'y':y+15},
+                  {'x':x+12,'y':y+15},
+                  {'x':x+12,'y':y+3},
+                  {'x':x,'y':y+3},
                  ]
        d3.selectAll('#'+roomId).remove();          
       d3.selectAll("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
@@ -664,7 +647,7 @@ async dismissPopover(ev) {
             return d.map(function(d) {
                 return [(d.x),(d.y)].join(",");
             }).join(" ");
-        }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','180 room');
+        }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class','180 room');
         let that=this;
         d3.selectAll('polygon').on('contextmenu', function(d,i){
           that.user.roomId=d3.event.target.id+'L'
@@ -678,11 +661,11 @@ async dismissPopover(ev) {
       let x=parseInt(pointx);
       let y=parseInt(pointy)
        var poly=[{'x':x,'y':y},
-                  {'x':x,'y':y+30}, 
-                  {'x':x+150,'y':y+30},
-                  {'x':x+150,'y':y-120},
-                  {'x':x+120,'y':y-120},
-                  {'x':x+120,'y':y},
+                  {'x':x,'y':y+3}, 
+                  {'x':x+15,'y':y+3},
+                  {'x':x+15,'y':y-12},
+                  {'x':x+12,'y':y-12},
+                  {'x':x+12,'y':y},
                  ]
        d3.selectAll('#'+roomId).remove();          
       d3.selectAll("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
@@ -692,7 +675,7 @@ async dismissPopover(ev) {
             return d.map(function(d) {
                 return [(d.x),(d.y)].join(",");
             }).join(" ");
-        }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','270 room');
+        }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class','270 room');
         let that=this;
         d3.selectAll('polygon').on('contextmenu', function(d,i){
           that.user.roomId=d3.event.target.id+'L'
@@ -706,11 +689,11 @@ async dismissPopover(ev) {
       let x=parseInt(pointx);
       let y=parseInt(pointy)
       var poly=[{"x":x, "y":y},
-      {"x":x,"y":y+150},
-      {"x":x+150,"y":y+150},
-      {"x":x+150,"y":y+120},
-      {"x":x+30,"y":y+120}, 
-      {"x":x+30,"y":y}];   
+      {"x":x,"y":y+15},
+      {"x":x+15,"y":y+15},
+      {"x":x+15,"y":y+12},
+      {"x":x+3,"y":y+12}, 
+      {"x":x+3,"y":y}];   
        d3.selectAll('#'+roomId).remove();          
       d3.selectAll("svg").selectAll('polygon'+' '+'#'+'r-'+this.index+'_1d')
         .data([poly])
@@ -719,7 +702,7 @@ async dismissPopover(ev) {
             return d.map(function(d) {
                 return [(d.x),(d.y)].join(",");
             }).join(" ");
-        }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','0 room');
+        }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class','0 room');
         let that=this;
         d3.selectAll('polygon').on('contextmenu', function(d,i){
           that.user.roomId=d3.event.target.id+'L'
@@ -734,13 +717,13 @@ async dismissPopover(ev) {
   let x=parseInt(pointx);
       let y=parseInt(pointy)
     var poly=[{'x':x,'y':y},
-    {'x':x,'y':y+200}, 
-    {'x':x+150,'y':y+200},
-    {'x':x+150,'y':y+160},
-    {'x':x+40,'y':y+160},
-    {'x':x+40,'y':y+40},
-    {'x':x+150,'y':y+40},
-    {'x':x+150,'y':y}
+    {'x':x,'y':y+20}, 
+    {'x':x+15,'y':y+20},
+    {'x':x+15,'y':y+16},
+    {'x':x+4,'y':y+16},
+    {'x':x+4,'y':y+4},
+    {'x':x+15,'y':y+4},
+    {'x':x+15,'y':y}
    ]
    d3.selectAll('#'+roomId).remove();
 d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
@@ -750,7 +733,7 @@ d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
 return d.map(function(d) {
   return [(d.x),(d.y)].join(",");
 }).join(" ");
-}).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','90 room');
+}).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class','90 room');
 let that=this;
 d3.selectAll('polygon').on('contextmenu', function(d,i){
   that.user.roomId=d3.event.target.id+"U"
@@ -763,13 +746,13 @@ if(setAngle==90){
   let x=parseInt(pointx);
       let y=parseInt(pointy)
     var poly=[{'x':x,'y':y},
-    {'x':x,'y':y+150}, 
-    {'x':x+40,'y':y+150},
-    {'x':x+40,'y':y+40},
-    {'x':x+160,'y':y+40},
-    {'x':x+160,'y':y+150},
-    {'x':x+200,'y':y+150},
-    {'x':x+200,'y':y}
+    {'x':x,'y':y+15}, 
+    {'x':x+4,'y':y+15},
+    {'x':x+4,'y':y+4},
+    {'x':x+16,'y':y+4},
+    {'x':x+16,'y':y+15},
+    {'x':x+20,'y':y+15},
+    {'x':x+20,'y':y}
    ]
    d3.selectAll('#'+roomId).remove();
 d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
@@ -779,7 +762,7 @@ d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
 return d.map(function(d) {
   return [(d.x),(d.y)].join(",");
 }).join(" ");
-}).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','180 room');
+}).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class','180 room');
 let that=this;
 d3.selectAll('polygon').on('contextmenu', function(d,i){
   that.user.roomId=d3.event.target.id+"U"
@@ -792,13 +775,13 @@ if(setAngle==180){
   let x=parseInt(pointx);
       let y=parseInt(pointy)
     var poly=[{'x':x,'y':y},
-    {'x':x,'y':y+40}, 
-    {'x':x+110,'y':y+40},
-    {'x':x+110,'y':y+160},
-    {'x':x,'y':y+160},
-    {'x':x,'y':y+200},
-    {'x':x+150,'y':y+200},
-    {'x':x+150,'y':y}
+    {'x':x,'y':y+4}, 
+    {'x':x+11,'y':y+4},
+    {'x':x+11,'y':y+16},
+    {'x':x,'y':y+16},
+    {'x':x,'y':y+20},
+    {'x':x+15,'y':y+20},
+    {'x':x+15,'y':y}
    ]
    d3.selectAll('#'+roomId).remove();
 d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
@@ -808,7 +791,7 @@ d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
 return d.map(function(d) {
   return [(d.x),(d.y)].join(",");
 }).join(" ");
-}).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','270 room');
+}).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class','270 room');
 let that=this;
 d3.selectAll('polygon').on('contextmenu', function(d,i){
   that.user.roomId=d3.event.target.id+"U"
@@ -821,13 +804,13 @@ if(setAngle==270){
   let x=parseInt(pointx);
       let y=parseInt(pointy)
       var poly=[{'x':x,'y':y},
-      {'x':x,'y':y+150}, 
-      {'x':x+200,'y':y+150},
-      {'x':x+200,'y':y},
-      {'x':x+160,'y':y},
-      {'x':x+160,'y':y+120},
-      {'x':x+40,'y':y+120},
-      {'x':x+40,'y':y}
+      {'x':x,'y':y+15}, 
+      {'x':x+20,'y':y+15},
+      {'x':x+20,'y':y},
+      {'x':x+16,'y':y},
+      {'x':x+16,'y':y+12},
+      {'x':x+4,'y':y+12},
+      {'x':x+4,'y':y}
       ]
    d3.selectAll('#'+roomId).remove();
 d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
@@ -837,7 +820,7 @@ d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
 return d.map(function(d) {
   return [(d.x),(d.y)].join(",");
 }).join(" ");
-}).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','0 room');
+}).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class','0 room');
 let that=this;
 d3.selectAll('polygon').on('contextmenu', function(d,i){
   that.user.roomId=d3.event.target.id+"U"
@@ -853,13 +836,13 @@ if(setAngle==0){
 let x=parseInt(pointx);
 let y=parseInt(pointy)
 var poly=[{'x':x,'y':y},
-  {'x':x,'y':y+40}, 
-  {'x':x+160,'y':y+40},
-  {'x':x+160,'y':y+100},
-  {'x':x+200,'y':y+100},
-  {'x':x+200,'y':y-40},
-  {'x':x+160,'y':y-40},
-  {'x':x+160,'y':y}
+  {'x':x,'y':y+4}, 
+  {'x':x+16,'y':y+4},
+  {'x':x+16,'y':y+10},
+  {'x':x+20,'y':y+10},
+  {'x':x+20,'y':y-4},
+  {'x':x+16,'y':y-4},
+  {'x':x+16,'y':y}
  ]
  d3.selectAll('#'+roomId).remove();
   d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
@@ -869,7 +852,7 @@ var poly=[{'x':x,'y':y},
         return d.map(function(d) {
             return [(d.x),(d.y)].join(",");
         }).join(" ");
-    }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','90 room');
+    }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class','90 room');
     let that=this;
 d3.selectAll('polygon').on('contextmenu', function(d,i){
   that.user.roomId=d3.event.target.id+"T"
@@ -884,13 +867,13 @@ if(setAngle==90){
 
 
   var poly=[{'x':x,'y':y},
-    {'x':x,'y':y+40}, 
-    {'x':x+160,'y':y+40},
-    {'x':x+160,'y':y},
-    {'x':x+100,'y':y},
-    {'x':x+100,'y':y-160},
-    {'x':x+60,'y':y-160},
-    {'x':x+60,'y':y}
+    {'x':x,'y':y+4}, 
+    {'x':x+16,'y':y+4},
+    {'x':x+16,'y':y},
+    {'x':x+10,'y':y},
+    {'x':x+10,'y':y-16},
+    {'x':x+6,'y':y-16},
+    {'x':x+6,'y':y}
    ]
    d3.selectAll('#'+roomId).remove();
     d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
@@ -900,7 +883,7 @@ if(setAngle==90){
           return d.map(function(d) {
               return [(d.x),(d.y)].join(",");
           }).join(" ");
-      }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','180 room');
+      }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class','180 room');
       let that=this;
   d3.selectAll('polygon').on('contextmenu', function(d,i){
     that.user.roomId=d3.event.target.id+"T"
@@ -913,13 +896,13 @@ if(setAngle==180){
   let x=parseInt(pointx);
   let y=parseInt(pointy)
   var poly=[{'x':x,'y':y},
-    {'x':x+40,'y':y}, 
-    {'x':x+40,'y':y+60},
-    {'x':x+200,'y':y+60},
-    {'x':x+200,'y':y+100},
-    {'x':x+40,'y':y+100},
-    {'x':x+40,'y':y+160},
-    {'x':x,'y':y+160}
+    {'x':x+4,'y':y}, 
+    {'x':x+4,'y':y+6},
+    {'x':x+20,'y':y+6},
+    {'x':x+20,'y':y+10},
+    {'x':x+4,'y':y+10},
+    {'x':x+4,'y':y+16},
+    {'x':x,'y':y+16}
    ]
    d3.selectAll('#'+roomId).remove();
     d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
@@ -929,7 +912,7 @@ if(setAngle==180){
           return d.map(function(d) {
               return [(d.x),(d.y)].join(",");
           }).join(" ");
-      }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','270 room');
+      }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class','270 room');
       let that=this;
   d3.selectAll('polygon').on('contextmenu', function(d,i){
     that.user.roomId=d3.event.target.id+"T"
@@ -942,13 +925,13 @@ if(setAngle==270){
   let x=parseInt(pointx);
   let y=parseInt(pointy)
   var poly=[{'x':x,'y':y},
-  {'x':x,'y':y+40}, 
-  {'x':x+60,'y':y+40},
-  {'x':x+60,'y':y+200},
-  {'x':x+100,'y':y+200},
-  {'x':x+100,'y':y+40},
-  {'x':x+160,'y':y+40},
-  {'x':x+160,'y':y}
+  {'x':x,'y':y+4}, 
+  {'x':x+6,'y':y+4},
+  {'x':x+6,'y':y+20},
+  {'x':x+10,'y':y+20},
+  {'x':x+10,'y':y+4},
+  {'x':x+16,'y':y+4},
+  {'x':x+16,'y':y}
  ]
    d3.selectAll('#'+roomId).remove();
     d3.selectAll("svg").selectAll('polygon'+' '+'#'+roomId)
@@ -958,7 +941,7 @@ if(setAngle==270){
           return d.map(function(d) {
               return [(d.x),(d.y)].join(",");
           }).join(" ");
-      }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',3).attr('class','0 room');
+      }).attr('id',roomId).attr('fill','none').attr('stroke','black').attr('stroke-width',1).attr('class','0 room');
       let that=this;
   d3.selectAll('polygon').on('contextmenu', function(d,i){
     that.user.roomId=d3.event.target.id+"T"
@@ -1083,7 +1066,7 @@ function toResize(){
     } //.......end...
 
     // ....to resize WIDTH..............
-    d3.selectAll('svg').append('rect')
+    d3.select('svg').append('rect')
     .attr('y',curEl.attr('y'))
     .attr('x',parseFloat(curEl.attr('x'))+parseFloat(curEl.attr('width')))
     .attr('stroke','red')
