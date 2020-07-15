@@ -102,7 +102,8 @@ export class Room{
     thisRoom
       .classed('room',true)
       .classed(room.type, true)
-
+      .raise().attr('fill', 'url(#'+room.floor+'Floor)')
+    this.deco_2D();
     this.setLabel(room);
     this.addDevices(room);
     this.addRoom3D(room);
@@ -140,6 +141,45 @@ export class Room{
     roomLabel.attr('transform', transform);
     this.label = roomLabel;
   }
+
+// ..........new start....................................................
+  deco_2D(){
+    let room = this.getData();
+    if(room.decorations === undefined){
+      return;
+    }
+    let devicesContainer = d3.select('#home-blue-print').append('g')
+      .attr('class', 'decorations-images');
+    devicesContainer.selectAll('rect')
+      .data(room.decorations)
+      .enter()
+      .append('rect')
+      .attr('x', (d: Decoration) => {
+        d.scale = d.scale || 1;
+        let adjustment = CONFIG[d.type] !== undefined ? CONFIG[d.type].width*d.scale/2 : 0;
+        return d.x2D 
+        // - adjustment;
+      })
+      .attr('y', (d: Decoration) => {
+        d.scale = d.scale || 1;
+        let adjustment = CONFIG[d.type] !== undefined ? CONFIG[d.type].height*d.scale/2 : 0;
+        return d.y2D 
+        // - adjustment;
+      })
+      .attr('class', (d: Decoration) => d.type.replace('_','-'))
+      .each(function(d: Decoration) {
+        let style = '';
+        let transform = '';
+        transform += d.rotate !== undefined ? `rotateZ(${d.rotate}deg) ` : '';
+        transform += d.scale !== undefined ? `scale(${d.scale}) ` : '';
+
+        style += `transform-origin: ${d.x2D}px ${d.y2D}px 0px; `;
+        style += transform !== '' ? `transform: ${transform}; ` : '';
+
+        // d3.select(this).attr('style', style);
+      });
+  }
+// .....................end..new..........
 
   addDevices(room: RoomData){
     if(room.devices === undefined){

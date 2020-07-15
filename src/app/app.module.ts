@@ -12,10 +12,14 @@ import * as $ from 'jquery'
 import { ViewLayoutComponent } from './view-layout/view-layout.component';
 import { VariableService } from './services/variable.service';
 import { UserService } from './services/user.service';
-import { ContextComponent, HomePage } from './home/home.page';
+import {  HomePage } from './home/home.page';
+//import { ContextComponent } from './service';
+import { ResizeRoomComponent } from './pages/resize-room/resize-room.component';
+import {ContextComponent, PopAndOtherService } from './services/pop-and-other.service';
+
 
 @NgModule({
-  declarations: [AppComponent, ViewLayoutComponent,ContextComponent],
+  declarations: [AppComponent, ViewLayoutComponent,ContextComponent,ResizeRoomComponent],
   entryComponents: [
         // HomeComponent,
         ViewLayoutComponent,ContextComponent
@@ -28,6 +32,8 @@ import { ContextComponent, HomePage } from './home/home.page';
     ViewLayoutComponent,
     VariableService,
     HomePage,
+    ResizeRoomComponent,
+    PopAndOtherService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent],

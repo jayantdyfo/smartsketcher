@@ -9,8 +9,11 @@
 
 <ion-content [fullscreen]="true">
 <div style="width: 100%; height: 100%; display: flex;">
+  
   <div id="container" style="padding:0% 0%">
     <svg *ngIf='layout== false' id="house" height = '100%' width = '100%' xmlns="http://www.w3.org/2000/svg" style="border: 1px solid;" (dragover)="allowDrop($event)" preserveAspectRatio="xMinYMin meet" version="1.1" viewBox='0 0 100 50'>
+    
+     
       <defs>
 
       </defs>
@@ -18,15 +21,16 @@
     <!-- <span id="layout" >
       <ng-container *ngComponentOutlet="viewDetails"></ng-container>
     </span> -->
-    
+   
   </div>
-
+  
 
 
 
 
   <!-- side panel.................................................................... -->
   <div id="props">
+    <div>
     <ion-button expand='block'>
       <!-- <ion-icon name="{{iconname}}"></ion-icon> -->
       <!-- <ion-icon name="md-arrow-dropdown"></ion-icon> -->
@@ -61,10 +65,10 @@
         </ion-item>
 
 
-        <ion-item>
+        <!-- <ion-item>
           <ion-icon (click)='select($event, "polygon")' name="create"></ion-icon>
           Draw Polygon with Line
-        </ion-item>
+        </ion-item> -->
         <!-- <ion-item>
           <ion-icon (click)='line($event, "polygon")' name="remove"></ion-icon>
           Draw Polygon with Line
@@ -89,9 +93,10 @@
       </div>
       <div class="deco-tool" *ngIf='props=="Decorations"'>
         <ion-item *ngFor='let deco of decorations'>
-         <img class="deco" src="{{deco.img}}"  alt="" draggable="true" (dragstart)="drag1($event,deco.img,deco.name,'deco')">
+         <img class="deco" src="{{deco.img}}"  alt="{{deco.name}}" draggable="true" (dragstart)="drag1($event,deco.img,deco.name,'deco')">
         </ion-item>
       </div>
+  </div>
   </div>
 </div>
 </ion-content>

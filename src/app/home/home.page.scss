@@ -73,10 +73,10 @@ ion-content ion-toolbar {
 ion-title{
   text-align: center;
 }
-// .mystyle{
-//   // width:6%;
-//   // height:6%;
-// }
+.mystyle{
+  width:6%;
+  height:6%;
+}
 #props{
   position: absolute;
   right: 0;
@@ -116,4 +116,7 @@ ion-select{
 }
 .draggable {
   cursor: move;
+}
+.door:hover{
+  border: 2px solid blue;
 }

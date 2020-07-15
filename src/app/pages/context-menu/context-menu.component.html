@@ -1,0 +1,8 @@
+`<ion-list>
+    <ion-item button id='res_but' (click)='activateResize()'>Resize</ion-item>
+    <ion-item button (click)='move()'>Move</ion-item>
+    <ion-item button (click)='remRoom()'>Remove</ion-item>
+    <ion-item button (click)='rotateRoom()'>Rotate</ion-item>
+    <ion-item button *ngIf='user.sel_Element[0].sel_el == "door"' (click)='rotate()'>Rotate</ion-item>
+    <ion-item button id='res_but' (click)="resizePolyRoom('side')">Resize Room </ion-item>
+  </ion-list>`
