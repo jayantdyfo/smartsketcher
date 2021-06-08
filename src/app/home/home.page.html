@@ -18,9 +18,6 @@
 
       </defs>
     </svg>
-    <!-- <span id="layout" >
-      <ng-container *ngComponentOutlet="viewDetails"></ng-container>
-    </span> -->
    
   </div>
   
@@ -86,16 +83,27 @@
           <img class="floor" (mouseover)="drag($event, f)" src="{{f.img}}" alt="">
         </ion-item>
       </div>
+      <div class="dev-tool" *ngIf='props=="DeviceModule"'>
+        <ion-item (click)="selectModule('mono')" >Mono </ion-item>
+        <ion-item (click)="selectModule('duo')">Duo </ion-item>
+        <ion-item (click)="selectModule('trio')" >Trio </ion-item>
+      </div>
+      <div>
+        <ion-item (click)="saveAngle(0)">0 Angle</ion-item>
+        <ion-item (click)="saveAngle(90)">90 Angle</ion-item>
+        <ion-item (click)="saveAngle(180)">180 Angle</ion-item>
+        <ion-item (click)="saveAngle(270)">270 Angle</ion-item>
       <div class="dev-tool" *ngIf='props=="Device"'>
         <ion-item *ngFor='let dev of devices'>
-         <img class="device" src="{{dev.img}}"  alt="" draggable="true" (dragstart)="drag1($event,dev.img,dev.name,'dev')">
+         <img class="device" src="{{dev.img}}"  alt="" draggable="true" (click)="drag1($event,dev.img,dev.name,'dev')">
         </ion-item>
       </div>
       <div class="deco-tool" *ngIf='props=="Decorations"'>
         <ion-item *ngFor='let deco of decorations'>
-         <img class="deco" src="{{deco.img}}"  alt="{{deco.name}}" draggable="true" (dragstart)="drag1($event,deco.img,deco.name,'deco')">
+         <img class="deco" src="{{deco.img}}"  alt="{{deco.name}}" draggable="true" (click)="drag1($event,deco.img,deco.name,'deco')">
         </ion-item>
       </div>
+    </div>
   </div>
   </div>
 </div>

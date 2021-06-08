@@ -72,6 +72,7 @@ export class UserService implements  AfterContentChecked {
   triggerDevice() {
     let env = this;
     var roomsWithClickProperty = document.querySelectorAll('.attachRoomClickEvent');
+    //console.log(roomsWithClickProperty)
     for (var i = 0; i < roomsWithClickProperty.length; i++) {
       roomsWithClickProperty[i].addEventListener('click', env.roomClick.bind(env));
     }
@@ -129,8 +130,8 @@ export class UserService implements  AfterContentChecked {
     this.variableService.exitApp = false;
     let target = event.currentTarget;
     let roomDisplayId = target.id.split('_')[0];
-    let roomId = this.variableService.allRooms[roomDisplayId].id;
-    let roomName = this.variableService.allRooms[roomDisplayId].name;
+    //let roomId = this.variableService.allRooms[roomDisplayId].id;
+    //let roomName = this.variableService.allRooms[roomDisplayId].name;
     document.querySelector("#home-layout").classList.add("display-none");
     document.querySelector("#rooms-layout").classList.remove("display-none");
     document.querySelector("#"+roomDisplayId + "_3d").classList.remove("display-none");
@@ -139,7 +140,7 @@ export class UserService implements  AfterContentChecked {
     setTimeout(function() {
       svg.style.width = '100%';
     }, 1000);
-    this.variableService.activeLayoutName = roomName;
+   // this.variableService.activeLayoutName = roomName;
     this.variableService.activeRoomId = roomDisplayId;
     this.setInitialDeviceStatusForRoom();
   }

@@ -4,6 +4,7 @@ import * as d3 from 'd3';
 import { RoomHelper } from './roomHelper';
 import CONFIG from '../devicesConfig';
 import Victor from 'victor';
+import { combineLatest } from 'rxjs';
 
 export class Room{
 
@@ -459,6 +460,7 @@ export class Room{
   private drawWalls(){
     let color = '#D3C5B8';
     let walls = this.roomHelper.getWalls();
+   // alert(walls)
     let defs = d3.select('#defs defs');
     let htmlTemplate = `<stop offset="10%" stop-color="${color}" stop-opacity="0.9"/>\
         <stop offset="80%" stop-color="${color}" stop-opacity="0.6"/>`;
@@ -476,7 +478,9 @@ export class Room{
         .attr('id',`wall-gradient-${wall.angle}`)
         .html(htmlTemplate);
       }
+      //console.log(c)
     }
+    
   }
 
   private drawFloor(){

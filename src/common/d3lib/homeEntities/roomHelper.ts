@@ -102,8 +102,12 @@ export class RoomHelper {
           y: 0.5 + topAdjust
         },
       });
+      //console.log(wallsInfo)
     }
+    //console.log(this.walls)
     this.walls = wallsInfo;
+    console.log(this.walls)
+    
   }
 
   private getWallsCoordinates(polyCoords: Point[], innerCoords: Point[]): Point[][] {
@@ -117,6 +121,7 @@ export class RoomHelper {
       thisWall.push(innerCoords[i]);
       polygonPoints.push(thisWall);
     }
+    console.log(polygonPoints)
     return polygonPoints;
   }
 
